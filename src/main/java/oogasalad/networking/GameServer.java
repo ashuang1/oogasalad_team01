@@ -21,11 +21,11 @@ public class GameServer {
 
   public static final int MAX_PLAYERS = 2;
 
-  private ServerSocket serverSocket;
-  private ExecutorService threadPool;
-  private Map<Integer, ClientHandler> clients = new ConcurrentHashMap<>();
+  private final ServerSocket serverSocket;
+  private final ExecutorService threadPool;
+  private final Map<Integer, ClientHandler> clients = new ConcurrentHashMap<>();
+  private final ObjectMapper mapper = JsonUtils.getMapper();
   private int nextPlayerId = 1;
-  private ObjectMapper mapper = JsonUtils.getMapper();
 
   /**
    * Creates a {@code GameServer} that listens on the specified port.

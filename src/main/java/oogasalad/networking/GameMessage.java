@@ -1,4 +1,3 @@
 package oogasalad.networking;
 
-public class GameMessage {
-}
+public record GameMessage(MessageType type, int playerId, String direction) {}
