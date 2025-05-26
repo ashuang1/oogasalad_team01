@@ -1,6 +1,7 @@
 package oogasalad.networking;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import oogasalad.networking.util.JsonUtils;
 
 public class GameServer {
 
@@ -17,6 +19,7 @@ public class GameServer {
   private ExecutorService threadPool;
   private Map<Integer, ClientHandler> clients = new ConcurrentHashMap<>();
   private int nextPlayerId = 1;
+  private ObjectMapper mapper = JsonUtils.getMapper();
 
   public GameServer(int port) throws IOException {
     serverSocket = new ServerSocket(port);
@@ -39,9 +42,15 @@ public class GameServer {
     }
   }
 
-  public void broadcast(String message) {
-    for (ClientHandler client : clients.values()) {
-      client.send(message);
+  public void broadcast(GameMessage message) {
+    try {
+      // serialize
+      String json = mapper.writeValueAsString(message);
+      for (ClientHandler client : clients.values()) {
+        client.send(json);
+      }
+    } catch (Exception e) {
+      System.err.println("Failed to serialize GameMessage: " + e.getMessage());
     }
   }
 
