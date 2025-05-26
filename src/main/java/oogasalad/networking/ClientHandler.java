@@ -1,10 +1,13 @@
 package oogasalad.networking;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import oogasalad.networking.util.JsonUtils;
 
 public class ClientHandler implements Runnable {
 
@@ -13,6 +16,7 @@ public class ClientHandler implements Runnable {
   private BufferedReader in;
   private PrintWriter out;
   private GameServer server;
+  private ObjectMapper mapper = JsonUtils.getMapper();
 
   public ClientHandler(Socket socket, int playerId, GameServer server) throws IOException {
     this.socket = socket;
@@ -22,22 +26,35 @@ public class ClientHandler implements Runnable {
     this.out = new PrintWriter(socket.getOutputStream(), true);
   }
 
+  @Override
   public void run() {
     try {
-      out.println("WELCOME " + playerId);
-      String message;
-      while ((message = in.readLine()) != null) {
-        System.out.println("From Player " + playerId + ": " + message);
-        server.broadcast("PLAYER " + playerId + ": " + message);
+      String jsonLine;
+      while ((jsonLine = in.readLine()) != null) {
+        // deserialize
+        GameMessage message = mapper.readValue(jsonLine, GameMessage.class);
+        System.out.println("Player " + playerId + ": " + message);
+        if (message.type() == MessageType.HELLO && message.playerId() == -1) {
+          assignPlayerId();
+          continue;
+        }
+
+        server.broadcast(message);
       }
     } catch (IOException e) {
-      System.out.println("Player " + playerId + " disconnected.");
+      System.out.println("Player " + playerId + " disconnected: " + e.getMessage());
     } finally {
       try {
         socket.close();
         server.removeClient(playerId);
       } catch (IOException ignored) {}
     }
+  }
+
+  private void assignPlayerId() throws JsonProcessingException {
+    GameMessage welcome = new GameMessage(MessageType.WELCOME, playerId, null);
+    String json = mapper.writeValueAsString(welcome);
+    send(json);
   }
 
   public void send(String message) {
