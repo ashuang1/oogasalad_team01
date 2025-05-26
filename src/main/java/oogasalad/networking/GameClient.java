@@ -9,16 +9,31 @@ import java.net.Socket;
 import java.util.Scanner;
 import oogasalad.networking.util.JsonUtils;
 
+/**
+ * Handles the client-side networking logic for a multiplayer game.
+ * Connects to the game server, sends player input as JSON-encoded messages,
+ * and listens for server responses to update local game state.
+ */
 public class GameClient {
 
   private Socket socket;
   private BufferedReader in;
   private PrintWriter out;
-  private String serverIP;
-  private int serverPort;
+  private final String serverIP;
+  private final int serverPort;
   private int playerId = -1;
-  private ObjectMapper mapper = JsonUtils.getMapper();
+  private final ObjectMapper mapper = JsonUtils.getMapper();
 
+  /**
+   * Creates a new {@code GameClient} and attempts to connect to the server
+   * at the specified IP address and port.
+   * <p>
+   * Upon successful connection, it sends a {@code HELLO} message to the server
+   * and starts a background thread to listen for server messages.
+   *
+   * @param serverIP   the IP address of the server to connect to
+   * @param serverPort the port number the server is listening on
+   */
   public GameClient(String serverIP, int serverPort) {
     this.serverIP = serverIP;
     this.serverPort = serverPort;
@@ -61,6 +76,11 @@ public class GameClient {
     }
   }
 
+  /**
+   * Sends a {@link GameMessage} to the server after serializing it as a JSON string.
+   *
+   * @param message the {@code GameMessage} to send to the server
+   */
   public void sendMessage(GameMessage message) {
     // { "type": "MOVE", "playerId": 1, "direction": "LEFT" }
     try {
@@ -72,6 +92,11 @@ public class GameClient {
     }
   }
 
+  /**
+   * Closes the client's connection to the server.
+   *
+   * @throws IOException if an I/O error occurs while closing the socket
+   */
   public void close() throws IOException {
     socket.close();
   }
