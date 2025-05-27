@@ -1,5 +1,5 @@
 package oogasalad.networking;
 
-import oogasalad.engine.utility.constants.Directions.Direction;
+import java.util.Map;
 
-public record GameMessage(MessageType type, int playerId, Direction direction) {}
+public record GameMessage(MessageType type, int playerId, Map<String, Object> payload) {}
