@@ -1,0 +1,108 @@
+{
+  "entityType": {
+    "name": "BlueGhost"
+  },
+  "modes": [
+    {
+      "name": "Default",
+      "image": {
+        "imagePath": "assets/blueghost.png",
+        "tileWidth": 28,
+        "tileHeight": 28,
+        "tilesToCycle": 4,
+        "animationSpeed": 5.0
+      },
+      "controlConfig": {
+        "controlStrategy": "Target",
+        "pathFindingStrategy": "Euclidean",
+        "targetCalculationConfig": {
+          "targetCalculationStrategy": "TargetEntityWithTrap",
+          "targetType": "Pacman",
+          "tilesAhead": 2,
+          "teamEntityType": "PinkGhost"
+        },
+        "player": 3
+      },
+      "movementSpeed": 1.0
+    }, {
+      "name": "Frightened",
+      "image": {
+        "imagePath": "assets/frightenedghost.png",
+        "tileWidth": 28,
+        "tileHeight": 28,
+        "tilesToCycle": 4,
+        "animationSpeed": 1.0
+      },
+      "controlConfig": {
+        "controlStrategy": "Target",
+        "pathFindingStrategy": "Random",
+        "targetCalculationConfig": {
+          "targetCalculationStrategy": "TargetLocation",
+          "targetX": 14,
+          "targetY": 14
+        }
+      },
+      "movementSpeed": 1.0
+    },
+    {
+      "name": "Dead",
+      "image": {
+        "imagePath": "assets/eyeghost.png",
+        "tileWidth": 28,
+        "tileHeight": 28,
+        "tilesToCycle": 1,
+        "animationSpeed": 1.0
+      },
+      "controlConfig": {
+        "controlStrategy": "Target",
+        "pathFindingStrategy": "Euclidean",
+        "targetCalculationConfig": {
+          "targetCalculationStrategy": "TargetLocation",
+          "targetX": 14,
+          "targetY": 14
+        }
+      },
+      "movementSpeed": 1.0
+    },
+    {
+      "name": "Flashing",
+      "image": {
+        "imagePath": "assets/flashingghost.png",
+        "tileWidth": 28,
+        "tileHeight": 28,
+        "tilesToCycle": 4,
+        "animationSpeed": 1.0
+      },
+      "controlConfig": {
+        "controlStrategy": "Target",
+        "pathFindingStrategy": "Random",
+        "targetCalculationConfig": {
+          "targetCalculationStrategy": "TargetLocation",
+          "targetX": 14,
+          "targetY": 14
+        }
+      },
+      "movementSpeed": 1.0
+    },
+    {
+      "name": "Scatter",
+      "image": {
+        "imagePath": "assets/blueghost.png",
+        "tileWidth": 28,
+        "tileHeight": 28,
+        "tilesToCycle": 4,
+        "animationSpeed": 1.0
+      },
+      "controlConfig": {
+        "controlStrategy": "Target",
+        "pathFindingStrategy": "Euclidean",
+        "targetCalculationConfig": {
+          "targetCalculationStrategy": "TargetLocation",
+          "targetX": 0,
+          "targetY": 0
+        }
+      },
+      "movementSpeed": 1.0
+    }
+  ]
+}

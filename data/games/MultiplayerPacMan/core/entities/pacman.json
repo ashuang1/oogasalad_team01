@@ -1,0 +1,22 @@
+{
+  "entityType": {
+    "name": "Pacman"
+  },
+  "modes": [
+    {
+      "name": "Default",
+      "image": {
+        "imagePath": "assets/pacman.png",
+        "tileWidth": 28,
+        "tileHeight": 28,
+        "tilesToCycle": 6,
+        "animationSpeed": 5.0
+      },
+      "controlConfig": {
+        "controlStrategy": "Keyboard",
+        "player": 1
+      },
+      "movementSpeed": 1.5
+    }
+  ]
+}

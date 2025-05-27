@@ -1,0 +1,21 @@
+{
+  "entityType": {
+    "name": "PowerPellet"
+  },
+  "modes": [
+    {
+      "name": "Default",
+      "image": {
+        "imagePath": "assets/powerpellet.png",
+        "tileWidth": 28,
+        "tileHeight": 28,
+        "tilesToCycle": 1,
+        "animationSpeed": 5.0
+      },
+      "controlConfig": {
+        "controlStrategy": "None"
+      },
+      "movementSpeed": 0.0
+    }
+  ]
+}

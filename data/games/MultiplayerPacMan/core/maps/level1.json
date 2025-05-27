@@ -1,0 +1,345 @@
+{
+  "entityMappings": [
+    {
+      "entity": "pacman",
+      "id": 1
+    },
+    {
+      "entity": "redghost",
+      "id": 2
+    },
+    {
+      "entity": "blueghost",
+      "id": 3
+    },
+    {
+      "entity": "wall",
+      "id": 5
+    },
+    {
+      "entity": "dot",
+      "id": 6
+    },
+    {
+      "entity": "cherry",
+      "id": 8
+    },
+    {
+      "entity": "strawberry",
+      "id": 9
+    },
+    {
+      "entity": "powerpellet",
+      "id": 10
+    },
+    {
+      "entity": "orangeghost",
+      "id": 11
+    },
+    {
+      "entity": "pinkghost",
+      "id": 12
+    }
+  ],
+  "mapInfo": {
+    "width": 28,
+    "height": 31,
+    "backgroundImagePath": "assets/background.png"
+  },
+  "layout": [
+    "5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 0 0 0 0 0 0 0 0 0 0 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 0 5 5 5 5 5 5 5 5 0 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 0 5 5 5 5 5 5 5 5 0 5 5 5 5 5 5 5 5 5",
+    "0 0 0 0 0 0 0 0 0 0 5 5 0 0 0 0 5 5 0 0 0 0 0 0 0 0 0 0",
+    "5 5 5 5 5 5 5 5 5 0 5 5 5 5 5 5 5 5 0 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 0 5 5 5 5 5 5 5 5 0 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 0 0 0 0 0 0 1 0 0 0 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 6 5 5 5 5 5 5 5 5 6 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 6 5 5 5 5 5 5 5 5 6 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 6 5 5 5 5 5 5 5 5 6 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 6 5 5 5 5 5 5 5 5 6 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 6 5 5 5 5 5 5 5 5 6 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 6 6 6 6 6 6 6 6 6 6 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 6 5 5 5 5 5 5 5 5 6 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 6 5 5 5 5 5 5 5 5 6 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 6 5 5 5 5 5 5 5 5 6 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 10 6 6 6 6 6 6 6 6 6 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5",
+    "5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5"
+  ],
+  "spawnEvents": [
+    {
+      "entityType": "8",
+      "spawnCondition": {
+        "type": "ScoreBased",
+        "parameters": {
+          "amount": 700
+        }
+      },
+      "x": 13.5,
+      "y": 17,
+      "mode": "Default",
+      "despawnCondition": {
+        "type": "ScoreBased",
+        "parameters": {
+          "amount": 1500
+        }
+      }
+    },
+    {
+      "entityType": "2",
+      "spawnCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 0
+        }
+      },
+      "x": 13.5,
+      "y": 11,
+      "mode": "Default",
+      "despawnCondition": {
+      }
+    },
+    {
+      "entityType": "12",
+      "spawnCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 3
+        }
+      },
+      "x": 13.5,
+      "y": 11,
+      "mode": "Default",
+      "despawnCondition": {
+      }
+    },
+    {
+      "entityType": "3",
+      "spawnCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 5
+        }
+      },
+      "x": 13.5,
+      "y": 11,
+      "mode": "Default",
+      "despawnCondition": {
+      }
+    },
+    {
+      "entityType": "11",
+      "spawnCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 9
+        }
+      },
+      "x": 13.5,
+      "y": 11,
+      "mode": "Default",
+      "despawnCondition": {
+      }
+    },
+    {
+      "entityType": "2",
+      "spawnCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 0
+        }
+      },
+      "x": 13.5,
+      "y": 14,
+      "mode": "Default",
+      "despawnCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 0
+        }
+      }
+    },
+    {
+      "entityType": "12",
+      "spawnCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 0
+        }
+      },
+      "x": 15,
+      "y": 14,
+      "mode": "Default",
+      "despawnCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 3
+        }
+      }
+    },
+    {
+      "entityType": "3",
+      "spawnCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 0
+        }
+      },
+      "x": 12,
+      "y": 14,
+      "mode": "Default",
+      "despawnCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 5
+        }
+      }
+    },
+    {
+      "entityType": "11",
+      "spawnCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 0
+        }
+      },
+      "x": 13.5,
+      "y": 14,
+      "mode": "Default",
+      "despawnCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 9
+        }
+      }
+    }
+  ],
+  "modeChangeEvents": [
+    {
+      "entityType": "2",
+      "modeChangeInfo": {
+        "originalMode": "Default",
+        "transitionMode": "Scatter",
+        "revertTime" : 7,
+        "transitionTime" : 1
+      },
+      "changeCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 7
+        }
+      }
+    }, {
+      "entityType": "3",
+      "modeChangeInfo": {
+        "originalMode": "Default",
+        "transitionMode": "Scatter",
+        "revertTime" : 7,
+        "transitionTime" : 1
+      },
+      "changeCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 7
+        }
+      }
+    }, {
+      "entityType": "11",
+      "modeChangeInfo": {
+        "originalMode": "Default",
+        "transitionMode": "Scatter",
+        "revertTime" : 7,
+        "transitionTime" : 1
+      },
+      "changeCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 7
+        }
+      }
+    }, {
+      "entityType": "12",
+      "modeChangeInfo": {
+        "originalMode": "Default",
+        "transitionMode": "Scatter",
+        "revertTime" : 7,
+        "transitionTime" : 1
+      },
+      "changeCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 7
+        }
+      }
+    }, {
+      "entityType": "2",
+      "modeChangeInfo": {
+        "originalMode": "Default",
+        "transitionMode": "Scatter",
+        "revertTime" : 7,
+        "transitionTime" : 1
+      },
+      "changeCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 34
+        }
+      }
+    }, {
+      "entityType": "3",
+      "modeChangeInfo": {
+        "originalMode": "Default",
+        "transitionMode": "Scatter",
+        "revertTime" : 7,
+        "transitionTime" : 1
+      },
+      "changeCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 34
+        }
+      }
+    }, {
+      "entityType": "11",
+      "modeChangeInfo": {
+        "originalMode": "Default",
+        "transitionMode": "Scatter",
+        "revertTime" : 7,
+        "transitionTime" : 1
+      },
+      "changeCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 34
+        }
+      }
+    }, {
+      "entityType": "12",
+      "modeChangeInfo": {
+        "originalMode": "Default",
+        "transitionMode": "Scatter",
+        "revertTime" : 7,
+        "transitionTime" : 1
+      },
+      "changeCondition": {
+        "type": "TimeElapsed",
+        "parameters": {
+          "amount": 34
+        }
+      }
+    }
+  ]
+}
