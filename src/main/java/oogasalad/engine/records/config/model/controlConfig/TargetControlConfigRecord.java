@@ -4,7 +4,12 @@ import oogasalad.engine.records.config.model.controlConfig.targetStrategy.Target
 
 public record TargetControlConfigRecord(
     String pathFindingStrategy,
-    TargetCalculationConfigInterface targetCalculationConfig
+    TargetCalculationConfigInterface targetCalculationConfig,
+    Integer player
 ) implements ControlConfigInterface {
 
+  @Override
+  public Integer getPlayer() {
+    return player;
+  }
 }
