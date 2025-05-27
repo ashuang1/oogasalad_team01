@@ -11,12 +11,12 @@ import oogasalad.networking.util.JsonUtils;
 
 public class ClientHandler implements Runnable {
 
-  private Socket socket;
-  private int playerId;
-  private BufferedReader in;
-  private PrintWriter out;
-  private GameServer server;
-  private ObjectMapper mapper = JsonUtils.getMapper();
+  private final Socket socket;
+  private final int playerId;
+  private final BufferedReader in;
+  private final PrintWriter out;
+  private final GameServer server;
+  private final ObjectMapper mapper = JsonUtils.getMapper();
 
   public ClientHandler(Socket socket, int playerId, GameServer server) throws IOException {
     this.socket = socket;
