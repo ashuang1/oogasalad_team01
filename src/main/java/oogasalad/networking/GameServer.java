@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -100,7 +103,10 @@ public class GameServer {
   public void handleReadyMessage(int playerId, boolean isReady) {
     playerReadyMap.put(playerId, isReady);
     if (checkAllPlayersReady()) {
-      broadcast(new GameMessage(MessageType.START, -1, null));
+      Map<String, Object> payload = new HashMap<>();
+      payload.put("playerIds", new ArrayList<>(playerReadyMap.keySet()));
+      GameMessage startMessage = new GameMessage(MessageType.START, -1, payload);
+      broadcast(startMessage);
     }
   }
 
