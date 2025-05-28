@@ -35,8 +35,12 @@ public class ClientHandler implements Runnable {
         GameMessage message = mapper.readValue(jsonLine, GameMessage.class);
         System.out.println("Player " + playerId + ": " + message);
         if (message.type() == MessageType.HELLO && message.playerId() == -1) {
-          assignPlayerId();
+          assignPlayerIdToClient();
           continue;
+        }
+
+        if (message.type() == MessageType.READY) {
+          server.handleReadyMessage(playerId, (boolean) message.payload().get("ready"));
         }
 
         server.broadcast(message);
@@ -51,7 +55,7 @@ public class ClientHandler implements Runnable {
     }
   }
 
-  private void assignPlayerId() throws JsonProcessingException {
+  private void assignPlayerIdToClient() throws JsonProcessingException {
     GameMessage welcome = new GameMessage(MessageType.WELCOME, playerId, null);
     String json = mapper.writeValueAsString(welcome);
     send(json);

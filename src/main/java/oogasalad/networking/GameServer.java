@@ -24,8 +24,9 @@ public class GameServer {
   private final ServerSocket serverSocket;
   private final ExecutorService threadPool;
   private final Map<Integer, ClientHandler> clients = new ConcurrentHashMap<>();
-  private final ObjectMapper mapper = JsonUtils.getMapper();
   private int nextPlayerId = 1;
+  private Map<Integer, Boolean> playerReadyMap = new ConcurrentHashMap<>();
+  private final ObjectMapper mapper = JsonUtils.getMapper();
 
   /**
    * Creates a {@code GameServer} that listens on the specified port.
@@ -54,6 +55,7 @@ public class GameServer {
         int playerId = nextPlayerId++;
         ClientHandler handler = new ClientHandler(clientSocket, playerId, this);
         clients.put(playerId, handler);
+        playerReadyMap.put(playerId, false);
         threadPool.submit(handler);
         System.out.println("Player " + playerId + " connected.");
       }
@@ -86,6 +88,25 @@ public class GameServer {
    */
   public void removeClient(int playerId) {
     clients.remove(playerId);
+  }
+
+  /**
+   * Puts player ready status in map and sends START message to start game if all players ready upon
+   * receiving a READY message.
+   *
+   * @param playerId the ID of the player sending READY message
+   * @param isReady ready status of player
+   */
+  public void handleReadyMessage(int playerId, boolean isReady) {
+    playerReadyMap.put(playerId, isReady);
+    if (checkAllPlayersReady()) {
+      broadcast(new GameMessage(MessageType.START, -1, null));
+    }
+  }
+
+  private boolean checkAllPlayersReady() {
+    return !playerReadyMap.isEmpty() &&
+        playerReadyMap.values().stream().allMatch(Boolean::booleanValue);
   }
 
   public static void main(String[] args) throws IOException {
