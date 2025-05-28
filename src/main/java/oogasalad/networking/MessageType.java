@@ -7,6 +7,7 @@ public enum MessageType {
   HELLO,
   WELCOME,
   READY,
+  START,
   MOVE,
   WIN,
   LOSS
