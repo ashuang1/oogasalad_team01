@@ -51,7 +51,7 @@ public class GameMapControllerTest {
   @Test
   public void updateEntityModels_setVelocityForEntity_entityPositionUpdates() throws Exception {
     Map<String, ModeConfigRecord> modes = new HashMap<>();
-    ControlConfigInterface mockControl = new KeyboardControlConfigRecord();
+    ControlConfigInterface mockControl = new KeyboardControlConfigRecord(null);
     ImageConfigRecord image = new ImageConfigRecord("sldha", 1, 1, 1, 1.0);
     ModeConfigRecord newMode = new ModeConfigRecord("Default", null, mockControl, image, null);
     modes.put("Default", newMode);

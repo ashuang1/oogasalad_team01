@@ -49,7 +49,7 @@ class GameMapTest extends DukeApplicationTest {
   void setUp() {
     myGameMap = new GameMap(width, height);
     Map<String, ModeConfigRecord> modes = new HashMap<>();
-    ControlConfigInterface mockControl = new KeyboardControlConfigRecord();
+    ControlConfigInterface mockControl = new KeyboardControlConfigRecord(null);
     ModeConfigRecord newMode = new ModeConfigRecord("Default", null, mockControl, null, null);
     modes.put("Default", newMode);
     EntityTypeRecord data = new EntityTypeRecord("test", modes, new ArrayList<String>());
@@ -104,7 +104,7 @@ class GameMapTest extends DukeApplicationTest {
   void iterator_ensureEntityIteratorContainsAddedEntities_Success() {
     assertDoesNotThrow(() -> myGameMap.addEntity(myEntity));
     Map<String, ModeConfigRecord> modes = new HashMap<>();
-    ControlConfigInterface mockControl = new KeyboardControlConfigRecord();
+    ControlConfigInterface mockControl = new KeyboardControlConfigRecord(null);
     ModeConfigRecord newMode = new ModeConfigRecord("Default", null, mockControl, null, null);
     modes.put("Default", newMode);
     EntityTypeRecord data = new EntityTypeRecord("test", modes, new ArrayList<String>());
@@ -150,7 +150,7 @@ class GameMapTest extends DukeApplicationTest {
       throws InvalidPositionException {
     // Create an entity that does NOT block anything
     Map<String, ModeConfigRecord> modes = new HashMap<>();
-    ControlConfigInterface mockControl = new KeyboardControlConfigRecord();
+    ControlConfigInterface mockControl = new KeyboardControlConfigRecord(null);
     ModeConfigRecord newMode = new ModeConfigRecord("Default", null, mockControl, null, null);
     modes.put("Default", newMode);
     EntityTypeRecord data = new EntityTypeRecord("test", modes, new ArrayList<String>());
@@ -166,7 +166,7 @@ class GameMapTest extends DukeApplicationTest {
   void isNotBlocked_attemptBlockingEntityAtPosition_ReturnsFalse() throws InvalidPositionException {
     // Create an entity that blocks "Player"
     Map<String, ModeConfigRecord> modes = new HashMap<>();
-    ControlConfigInterface mockControl = new KeyboardControlConfigRecord();
+    ControlConfigInterface mockControl = new KeyboardControlConfigRecord(null);
     ModeConfigRecord newMode = new ModeConfigRecord("Default", null, mockControl, null, null);
     modes.put("Default", newMode);
     EntityTypeRecord data = new EntityTypeRecord("test", modes, List.of("Player"));

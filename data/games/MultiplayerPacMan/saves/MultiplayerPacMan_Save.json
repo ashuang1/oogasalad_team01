@@ -1,8 +1,0 @@
-{
-  "saveName" : "MultiplayerPacMan_Save",
-  "currentLevel" : 0,
-  "totalScore" : 0,
-  "lives" : 10,
-  "highScore" : 160,
-  "levelOrder" : [ 0, 1 ]
-}

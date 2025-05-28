@@ -3,6 +3,7 @@ package oogasalad.authoring.view;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.testfx.util.WaitForAsyncUtils.waitForFxEvents;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeoutException;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -39,7 +40,7 @@ class ControlTypeEditorViewTest extends DukeApplicationTest {
   @Test
   void getControlConfig_ValidateKeyboardConfigOnSelection_ReturnsKeyboardControlStrategy()
       throws TimeoutException {
-    controlType = new KeyboardControlConfigRecord();
+    controlType = new KeyboardControlConfigRecord(null);
     clickOn("#control-type-selector");
     clickOn("Keyboard");
     waitForFxEvents();
@@ -52,7 +53,7 @@ class ControlTypeEditorViewTest extends DukeApplicationTest {
   @Test
   void getControlConfig_ValidTargetStrategyCreation_ReturnsTargetControlStrategy()
       throws TimeoutException {
-    controlType = new TargetControlConfigRecord("Bfs", new TargetEntityConfigRecord("test"));
+    controlType = new TargetControlConfigRecord("Bfs", new TargetEntityConfigRecord("test"), null);
     clickOn("#control-type-selector");
     clickOn("Target");
     waitForFxEvents();
@@ -71,7 +72,7 @@ class ControlTypeEditorViewTest extends DukeApplicationTest {
 
   @Test
   void getControlConfig_InvalidInputForTargetLocation_ThrowsException() {
-    controlType = new TargetControlConfigRecord("Bfs", new TargetEntityConfigRecord("test"));
+    controlType = new TargetControlConfigRecord("Bfs", new TargetEntityConfigRecord("test"), null);
     clickOn("#control-type-selector");
     clickOn("Target");
     waitForFxEvents();
@@ -85,12 +86,41 @@ class ControlTypeEditorViewTest extends DukeApplicationTest {
     writeInputTo(lookup("#field-targetY").queryAs(TextInputControl.class), "def");
 
     // Assert throw error due to invalid input
-    assertThrows(IllegalStateException.class, () -> controlTypeEditorView.getControlConfig());
+    // Wrap the call to avoid FX thread exception
+    ViewException[] thrown = new ViewException[1];
+    CountDownLatch latch = new CountDownLatch(1);
+    Platform.runLater(() -> {
+      new Thread(() -> {
+        // Slight delay to let the alert appear
+        try {
+          Thread.sleep(400);
+          clickOn("OK"); // dismiss the alert dialog
+          Thread.sleep(400);
+          clickOn("OK");
+        } catch (Exception ignored) {}
+      }).start();
+
+      try {
+        controlTypeEditorView.getControlConfig();
+      } catch (ViewException e) {
+        thrown[0] = e;
+      } finally {
+        latch.countDown();
+      }
+    });
+
+    try {
+      latch.await(); // wait for FX thread to finish
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
+
+    assertNotNull(thrown[0]); // verify exception was thrown
   }
 
   @Test
   void populateControlConfig_PopulateViewFromConfigRecord_Success() {
-    controlType = new TargetControlConfigRecord("Bfs", new TargetEntityConfigRecord("test"));
+    controlType = new TargetControlConfigRecord("Bfs", new TargetEntityConfigRecord("test"), null);
     // Use Platform.runLater to ensure the UI manipulation happens on the FX application thread
     // Asked ChatGPT for debugging this.
     Platform.runLater(() -> controlTypeEditorView.populateControlConfigUI(controlType));

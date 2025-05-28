@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.anyDouble;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -45,7 +46,7 @@ class EntityTest {
     // MOCK STATIC METHOD
     controlStrategyFactoryMock = mockStatic(ControlStrategyFactory.class);
     controlStrategyFactoryMock
-        .when(() -> ControlStrategyFactory.createControlStrategy(any(), any(), any()))
+        .when(() -> ControlStrategyFactory.createControlStrategy(any(), any(), any(), anyInt(), any(), any()))
         .thenReturn(mock(ControlStrategyInterface.class));
 
     // Create dummy mode

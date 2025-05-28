@@ -113,7 +113,7 @@ public class ModeEditorDialogTest extends DukeApplicationTest {
     String imageFileName = "mock.png";
 
     ModeConfigRecord existingConfig = new ModeConfigRecord(expectedName,
-        new EntityPropertiesRecord(expectedName, List.of()), new KeyboardControlConfigRecord(),
+        new EntityPropertiesRecord(expectedName, List.of()), new KeyboardControlConfigRecord(null),
         new ImageConfigRecord(
             getClass().getClassLoader().getResource(imageFileName).toExternalForm(),
             expectedTileWidth, expectedTileHeight, expectedTilesToCycle, expectedAnimationSpeed),
