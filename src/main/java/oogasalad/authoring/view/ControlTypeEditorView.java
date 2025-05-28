@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -102,7 +103,14 @@ public class ControlTypeEditorView {
       return getControlConfigInterface(controlType, constructorArgs);
 
     } catch (Exception e) {
-      showError("Error building control config: " + e.getMessage());
+      // ✅ FIX 1: Avoid JavaFX dialogs during test mode
+      if (Platform.isFxApplicationThread()) {
+        showError("Error building control config: " + e.getMessage());
+      } else {
+        System.err.println("Error building control config: " + e.getMessage());
+      }
+
+      // ✅ FIX 2: Still fail test cleanly
       throw new ViewException("Error building control config: ", e);
     }
   }
@@ -137,7 +145,12 @@ public class ControlTypeEditorView {
   private int extractConstructorArgument(List<Object> constructorArgs, int textFieldIndex,
       Class<?> type) {
     String input = controlTypeParameterFields.get(textFieldIndex++).getText();
-    constructorArgs.add(FileUtility.castInputToCorrectType(input, type));
+    // ✅ Handle empty input for nullable types like Integer
+    if (input.isEmpty()) {
+      constructorArgs.add(null);
+    } else {
+      constructorArgs.add(FileUtility.castInputToCorrectType(input, type));
+    }
     return textFieldIndex;
   }
 

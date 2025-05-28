@@ -93,7 +93,7 @@ class TargetControlStrategyTest {
       TargetControlStrategy strategy = new TargetControlStrategy(
           gameMap,
           placement,
-          new TargetControlConfigRecord("Dijkstra", null)
+          new TargetControlConfigRecord("Dijkstra", null, null)
       );
 
       strategy.update(entity);

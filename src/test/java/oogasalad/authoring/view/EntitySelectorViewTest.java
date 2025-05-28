@@ -48,7 +48,7 @@ public class EntitySelectorViewTest extends DukeApplicationTest {
     );
 
     // --- Create EntityProperties ---
-    ControlConfigInterface controlConfig = new KeyboardControlConfigRecord();
+    ControlConfigInterface controlConfig = new KeyboardControlConfigRecord(null);
 
     EntityPropertiesRecord props = new EntityPropertiesRecord(
         "Mode 1",

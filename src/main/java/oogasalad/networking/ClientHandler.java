@@ -11,12 +11,12 @@ import oogasalad.networking.util.JsonUtils;
 
 public class ClientHandler implements Runnable {
 
-  private Socket socket;
-  private int playerId;
-  private BufferedReader in;
-  private PrintWriter out;
-  private GameServer server;
-  private ObjectMapper mapper = JsonUtils.getMapper();
+  private final Socket socket;
+  private final int playerId;
+  private final BufferedReader in;
+  private final PrintWriter out;
+  private final GameServer server;
+  private final ObjectMapper mapper = JsonUtils.getMapper();
 
   public ClientHandler(Socket socket, int playerId, GameServer server) throws IOException {
     this.socket = socket;
@@ -35,8 +35,12 @@ public class ClientHandler implements Runnable {
         GameMessage message = mapper.readValue(jsonLine, GameMessage.class);
         System.out.println("Player " + playerId + ": " + message);
         if (message.type() == MessageType.HELLO && message.playerId() == -1) {
-          assignPlayerId();
+          assignPlayerIdToClient();
           continue;
+        }
+
+        if (message.type() == MessageType.READY) {
+          server.handleReadyMessage(playerId, (boolean) message.payload().get("ready"));
         }
 
         server.broadcast(message);
@@ -51,7 +55,7 @@ public class ClientHandler implements Runnable {
     }
   }
 
-  private void assignPlayerId() throws JsonProcessingException {
+  private void assignPlayerIdToClient() throws JsonProcessingException {
     GameMessage welcome = new GameMessage(MessageType.WELCOME, playerId, null);
     String json = mapper.writeValueAsString(welcome);
     send(json);

@@ -1,0 +1,28 @@
+{
+  "entityType": {
+    "name": "Wall",
+    "blocks": [
+      "Pacman",
+      "RedGhost",
+      "BlueGhost",
+      "PinkGhost",
+      "OrangeGhost"
+    ]
+  },
+  "modes": [
+    {
+      "name": "Default",
+      "image": {
+        "imagePath": "assets/wall.png",
+        "tileWidth": 8,
+        "tileHeight": 8,
+        "tilesToCycle": 1,
+        "animationSpeed": 1.0
+      },
+      "controlConfig": {
+        "controlStrategy": "None"
+      },
+      "movementSpeed": 0
+    }
+  ]
+}

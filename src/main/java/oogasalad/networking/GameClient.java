@@ -1,13 +1,21 @@
 package oogasalad.networking;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
+import oogasalad.engine.utility.constants.Directions.Direction;
 import oogasalad.networking.util.JsonUtils;
+import oogasalad.player.model.strategies.control.RemoteControlStrategy;
 
 /**
  * Handles the client-side networking logic for a multiplayer game.
@@ -22,6 +30,9 @@ public class GameClient {
   private final String serverIP;
   private final int serverPort;
   private int playerId = -1;
+  private boolean isReady = false;
+  private Map<Integer, RemoteControlStrategy> playerIdToRemoteControlStrategy = new HashMap<>();
+  private Set<Integer> activePlayerIds = new HashSet<>();
   private final ObjectMapper mapper = JsonUtils.getMapper();
 
   /**
@@ -74,6 +85,19 @@ public class GameClient {
       playerId = message.playerId();
       System.out.println("Received playerId: " + playerId);
     }
+
+    if (message.type() == MessageType.MOVE) {
+      RemoteControlStrategy strategy = playerIdToRemoteControlStrategy.get(playerId);
+      if (strategy != null) {
+        strategy.setDirectionFromNetwork((Direction) message.payload().get("direction"));
+      }
+    }
+
+    if (message.type() == MessageType.START) {
+      Object raw = message.payload().get("playerIds");
+      List<Integer> ids = mapper.convertValue(raw, new TypeReference<>() {});
+      this.activePlayerIds = new HashSet<>(ids);
+    }
   }
 
   /**
@@ -82,7 +106,8 @@ public class GameClient {
    * @param message the {@code GameMessage} to send to the server
    */
   public void sendMessage(GameMessage message) {
-    // { "type": "MOVE", "playerId": 1, "direction": "LEFT" }
+    // {"type": "MOVE", "playerId": 1, "payload": {"direction": "R"}}
+    // {"type": "READY", "playerId": 1, "payload": {"ready": true}}
     try {
       // serialize
       String json = mapper.writeValueAsString(message);
@@ -90,6 +115,11 @@ public class GameClient {
     } catch (IOException e) {
       System.err.println("Failed to serialize GameMessage: " + e.getMessage());
     }
+  }
+
+  public void setReadyStatus(boolean ready) {
+    isReady = ready;
+    sendMessage(new GameMessage(MessageType.READY, playerId, Map.of("ready", ready)));
   }
 
   /**

@@ -88,7 +88,7 @@ public class ModeChangeEventDialogTest extends DukeApplicationTest {
     return new ModeConfigRecord(
         name,
         new EntityPropertiesRecord(name, Collections.emptyList()),
-        new KeyboardControlConfigRecord(),
+        new KeyboardControlConfigRecord(null),
         new ImageConfigRecord("file:test.png", 32, 32, 4, 1.0),
         1.0
     );

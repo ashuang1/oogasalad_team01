@@ -3,6 +3,8 @@ package oogasalad.player.model.api;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.util.Map;
+import java.util.Set;
 import oogasalad.engine.config.EntityPlacement;
 import oogasalad.engine.records.config.ModeConfigRecord;
 import oogasalad.engine.records.config.model.controlConfig.ControlConfigInterface;
@@ -10,6 +12,8 @@ import oogasalad.player.controller.GameInputManager;
 import oogasalad.player.model.GameMapInterface;
 import oogasalad.player.model.exceptions.ControlStrategyException;
 import oogasalad.player.model.strategies.control.ControlStrategyInterface;
+import oogasalad.player.model.strategies.control.KeyboardControlStrategy;
+import oogasalad.player.model.strategies.control.RemoteControlStrategy;
 
 /**
  * The {@code ControlStrategyFactory} class is responsible for dynamically creating instances of
@@ -24,7 +28,7 @@ import oogasalad.player.model.strategies.control.ControlStrategyInterface;
  *
  * <p>Usage of this class involves providing a {@link GameInputManager}, an
  * {@link EntityPlacement}, and a {@link GameMapInterface} to the
- * {@link #createControlStrategy(GameInputManager, EntityPlacement, GameMapInterface)} method, which
+ * {@link #createControlStrategy(GameInputManager, EntityPlacement, GameMapInterface, int, Set, Map)} method, which
  * returns an instance of the appropriate {@link ControlStrategyInterface}.</p>
  *
  * <p>Note: This class assumes that the control strategy classes follow a specific naming
@@ -54,17 +58,28 @@ public class ControlStrategyFactory {
    * @param input           the {@link GameInputManager} to be used by the control strategy
    * @param entityPlacement the {@link EntityPlacement} containing the control type
    * @param gameMap         the {@link GameMapInterface} to be used by the control strategy
+   * @param localPlayerId
+   * @param activePlayerIds
+   * @param remoteMap
    * @return an instance of {@link ControlStrategyInterface} corresponding to the control type
    * @throws ControlStrategyException if the control strategy cannot be created or instantiated
    */
   public static ControlStrategyInterface createControlStrategy(
       GameInputManager input, EntityPlacement entityPlacement,
-      GameMapInterface gameMap)
+      GameMapInterface gameMap, int localPlayerId, Set<Integer> activePlayerIds,
+      Map<Integer, RemoteControlStrategy> remoteMap)
       throws ControlStrategyException {
 
     String mode = entityPlacement.getMode();
     ModeConfigRecord modeConfig = entityPlacement.getType().modes().get(mode);
     ControlConfigInterface controlConfig = modeConfig.controlConfig();
+    Integer playerId = controlConfig.getPlayer();
+
+    ControlStrategyInterface strategy = getControlStrategyForNetworkedGame(
+        input, entityPlacement, gameMap, localPlayerId, activePlayerIds, remoteMap, playerId);
+    if (strategy != null) {
+      return strategy;
+    }
 
     String className =
         STRATEGY_PACKAGE + controlConfig.getClass().getSimpleName()
@@ -78,6 +93,22 @@ public class ControlStrategyFactory {
           "Failed to create strategy for control type: " + controlConfig.getClass() + " "
               + className, e);
     }
+  }
+
+  private static ControlStrategyInterface getControlStrategyForNetworkedGame(GameInputManager input,
+      EntityPlacement entityPlacement, GameMapInterface gameMap, int localPlayerId,
+      Set<Integer> activePlayerIds, Map<Integer, RemoteControlStrategy> remoteMap,
+      Integer playerId) {
+    if (playerId != null && activePlayerIds != null && activePlayerIds.contains(playerId)) {
+      if (playerId == localPlayerId) {
+        return new KeyboardControlStrategy(input, gameMap, entityPlacement);
+      } else if (remoteMap != null) {
+        RemoteControlStrategy remote = new RemoteControlStrategy();
+        remoteMap.put(playerId, remote);
+        return remote;
+      }
+    }
+    return null;
   }
 
   private static ControlStrategyInterface instantiateStrategy(Class<?> strategyClass,

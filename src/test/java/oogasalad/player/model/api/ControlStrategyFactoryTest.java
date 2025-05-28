@@ -56,25 +56,25 @@ public class ControlStrategyFactoryTest {
     mockControlConfig(new NoneControlConfigRecord());
 
     ControlStrategyInterface strategy = ControlStrategyFactory.createControlStrategy(mockInput,
-        mockPlacement, mockMap);
+        mockPlacement, mockMap, -1, null, null);
     assertInstanceOf(NoneControlStrategy.class, strategy);
   }
 
   @Test
   void createControlStrategy_keyboardControl_strategyCreated() {
-    mockControlConfig(new KeyboardControlConfigRecord());
+    mockControlConfig(new KeyboardControlConfigRecord(null));
 
     ControlStrategyInterface strategy = ControlStrategyFactory.createControlStrategy(mockInput,
-        mockPlacement, mockMap);
+        mockPlacement, mockMap, -1, null, null);
     assertInstanceOf(KeyboardControlStrategy.class, strategy);
   }
 
   @Test
   void createControlStrategy_targetControl_strategyCreated() {
-    mockControlConfig(new TargetControlConfigRecord("A*", null));
+    mockControlConfig(new TargetControlConfigRecord("A*", null, null));
 
     ControlStrategyInterface strategy = ControlStrategyFactory.createControlStrategy(mockInput,
-        mockPlacement, mockMap);
+        mockPlacement, mockMap, -1, null, null);
     assertInstanceOf(TargetControlStrategy.class, strategy);
   }
 
@@ -83,7 +83,7 @@ public class ControlStrategyFactoryTest {
     mockControlConfig(new ConditionalControlConfigRecord(5, "A*", "Dijkstra", null));
 
     ControlStrategyInterface strategy = ControlStrategyFactory.createControlStrategy(mockInput,
-        mockPlacement, mockMap);
+        mockPlacement, mockMap, -1, null, null);
     assertInstanceOf(ConditionalControlStrategy.class, strategy);
   }
 
@@ -94,6 +94,6 @@ public class ControlStrategyFactoryTest {
     });
 
     assertThrows(ControlStrategyException.class,
-        () -> ControlStrategyFactory.createControlStrategy(mockInput, mockPlacement, mockMap));
+        () -> ControlStrategyFactory.createControlStrategy(mockInput, mockPlacement, mockMap, -1, null, null));
   }
 }

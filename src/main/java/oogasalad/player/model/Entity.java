@@ -42,7 +42,7 @@ public class Entity {
     this.gameMap = gameMap;
     this.myConfig = config;
     this.myControlStrategy = ControlStrategyFactory.createControlStrategy(inputManager,
-        myEntityPlacement, this.gameMap);
+        myEntityPlacement, this.gameMap, -1, null, null);
     speed = setSpeedFromConfig(entityPlacement);
   }
 
@@ -113,7 +113,7 @@ public class Entity {
    */
   public void updateControlStrategy() {
     myControlStrategy = ControlStrategyFactory.createControlStrategy(inputManager,
-        myEntityPlacement, this.gameMap);
+        myEntityPlacement, this.gameMap, -1, null, null);
   }
 
   /**

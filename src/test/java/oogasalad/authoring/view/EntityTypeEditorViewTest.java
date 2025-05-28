@@ -48,7 +48,7 @@ public class EntityTypeEditorViewTest extends ApplicationTest {
     );
 
     ModeConfigRecord mockMode = new ModeConfigRecord("Default", entityProps,
-        new KeyboardControlConfigRecord(), image, 1.0);
+        new KeyboardControlConfigRecord(null), image, 1.0);
     Map<String, ModeConfigRecord> modeMap = new HashMap<>();
     modeMap.put("Default", mockMode);
 
