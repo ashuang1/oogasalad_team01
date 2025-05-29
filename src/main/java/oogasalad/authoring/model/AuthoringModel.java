@@ -61,7 +61,8 @@ public class AuthoringModel {
         0,                                      // Default initial score
         new SurviveForTimeConditionRecord(5),   // Default win condition - survive for 5 seconds
         new LivesBasedConditionRecord(),         // Default lose condition
-        new HashSet<>()
+        new HashSet<>(),
+        false                                    // Default isMultiplayer
     );
   }
 

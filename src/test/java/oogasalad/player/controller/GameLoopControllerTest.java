@@ -44,7 +44,7 @@ class GameLoopControllerTest extends DukeApplicationTest {
     gameMap = Mockito.spy(new GameMap(10, 10));
 
     SettingsRecord gameSettings = new SettingsRecord(1.0, 5, 5,
-        new EntityBasedConditionRecord("dot"), new LivesBasedConditionRecord(), new HashSet<>());
+        new EntityBasedConditionRecord("dot"), new LivesBasedConditionRecord(), new HashSet<>(), false);
     GameState gameState = new GameState(gameSettings);
     GameContextRecord gameContext = new GameContextRecord(
         Mockito.spy(new GameInputManager(mock(Scene.class), mock(Group.class))), gameMap,
@@ -54,7 +54,7 @@ class GameLoopControllerTest extends DukeApplicationTest {
     when(mockConfigModel.winCondition()).thenReturn(new EntityBasedConditionRecord("dot"));
     when(mockConfigModel.loseCondition()).thenReturn(new LivesBasedConditionRecord());
     when(mockConfigModel.settings()).thenReturn(
-        new SettingsRecord(1.0, 1, 1, null, null, new HashSet<>()));
+        new SettingsRecord(1.0, 1, 1, null, null, new HashSet<>(), false));
 
     gameMapView = Mockito.spy(
         new GameMapView(gameContext, mockConfigModel, "data/games/BasicPacMan/"));

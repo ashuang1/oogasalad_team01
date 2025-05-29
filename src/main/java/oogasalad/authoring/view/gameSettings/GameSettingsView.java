@@ -41,6 +41,7 @@ public class GameSettingsView {
   private final SettingsEditor settingsEditor;
   private final ConditionEditor conditionEditor;
   private final CheatCodeEditor cheatCodeEditor;
+  private final MultiplayerEditor multiplayerEditor;
 
   /**
    * Creates a new GameSettingsView for editing game configuration.
@@ -90,6 +91,8 @@ public class GameSettingsView {
 
     cheatCodeEditor = new CheatCodeEditor();
 
+    multiplayerEditor = new MultiplayerEditor();
+
     HBox buttonBox = createButtonBox();
 
     GridPane settingsGrid = new GridPane();
@@ -99,6 +102,7 @@ public class GameSettingsView {
     settingsGrid.add(settingsEditor.getNode(), 0, 1, 4, 1);
     settingsGrid.add(conditionEditor.getNode(), 0, 2, 4, 1);
     settingsGrid.add(cheatCodeEditor.getNode(), 0, 3, 4, 1);
+    settingsGrid.add(multiplayerEditor, 0, 4, 4, 1);
 
     contentBox.getChildren().addAll(
         titleLabel,
@@ -140,6 +144,7 @@ public class GameSettingsView {
         String.valueOf(controller.getModel().getDefaultSettings().startingLives()))
     );
     cheatCodeEditor.update(controller.getModel().getDefaultSettings().cheatTypes());
+    multiplayerEditor.update(controller.getModel().getDefaultSettings().isMultiplayer());
   }
 
   /**
@@ -157,7 +162,8 @@ public class GameSettingsView {
           settingsEditor.getInitialScore(),
           conditionEditor.createSelectedWinCondition(),
           conditionEditor.createSelectedLoseCondition(),
-          cheatCodeEditor.getSelectedCheats()
+          cheatCodeEditor.getSelectedCheats(),
+          multiplayerEditor.getIsMultiplayerEnabled()
       );
       controller.getModel().setDefaultSettings(updatedSettings);
     } catch (ViewException ex) {

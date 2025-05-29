@@ -40,7 +40,11 @@ public class ClientHandler implements Runnable {
         }
 
         if (message.type() == MessageType.READY) {
-          server.handleReadyMessage(playerId, (boolean) message.payload().get("ready"));
+          Object readyObject = message.payload().get("ready");
+          if (readyObject instanceof Boolean ready) {
+            server.handleReadyMessage(playerId, ready);
+          }
+          continue;
         }
 
         server.broadcast(message);

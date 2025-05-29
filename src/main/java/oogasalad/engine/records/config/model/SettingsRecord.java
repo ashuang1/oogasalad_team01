@@ -1,5 +1,6 @@
 package oogasalad.engine.records.config.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Set;
 import oogasalad.engine.records.config.model.losecondition.LoseConditionInterface;
 import oogasalad.engine.records.config.model.wincondition.WinConditionInterface;
@@ -19,6 +20,7 @@ import oogasalad.player.model.enums.CheatType;
 public record SettingsRecord(Double gameSpeed, Integer startingLives, Integer initialScore,
                              WinConditionInterface winCondition,
                              LoseConditionInterface loseCondition,
-                             Set<CheatType> cheatTypes) {
+                             Set<CheatType> cheatTypes,
+                             @JsonProperty(defaultValue = "false") boolean isMultiplayer) {
 
 }
