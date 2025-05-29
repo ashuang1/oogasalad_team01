@@ -29,7 +29,7 @@ class ScoreBasedSpawnEventStrategyTest {
 
   private GameContextRecord contextWithScore(int score) {
     SettingsRecord gameSettings = new SettingsRecord(1.0, 5, 5,
-        new EntityBasedConditionRecord("dot"), new LivesBasedConditionRecord(), new HashSet<>());
+        new EntityBasedConditionRecord("dot"), new LivesBasedConditionRecord(), new HashSet<>(), false);
     GameStateInterface state = new GameState(gameSettings);
     state.updateScore(score);
     return new GameContextRecord(new GameInputManager(new Scene(new Pane()), new Group()),
