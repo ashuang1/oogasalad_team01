@@ -346,7 +346,8 @@ public class JsonConfigParser implements ConfigParserInterface {
         baseSettings.initialScore(),
         baseSettings.winCondition(),
         baseSettings.loseCondition(),
-        baseSettings.cheatTypes()
+        baseSettings.cheatTypes(),
+        baseSettings.isMultiplayer()
     );
   }
 

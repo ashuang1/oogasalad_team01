@@ -16,7 +16,8 @@
     "loseCondition" : {
       "type" : "LivesBased"
     },
-    "cheatTypes": ["NEXT_LEVEL", "ADD_LIFE", "SPEED_UP", "PAUSE_GAME"]
+    "cheatTypes": ["NEXT_LEVEL", "ADD_LIFE", "SPEED_UP", "PAUSE_GAME"],
+    "isMultiplayer": true
   },
   "levels" : [ {
     "levelMap" : "level1"
