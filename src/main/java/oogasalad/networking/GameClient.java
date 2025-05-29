@@ -117,6 +117,11 @@ public class GameClient {
     }
   }
 
+  /**
+   * Sets ready status for client and sends ready status message to server.
+   *
+   * @param ready ready status of client.
+   */
   public void setReadyStatus(boolean ready) {
     isReady = ready;
     sendMessage(new GameMessage(MessageType.READY, playerId, Map.of("ready", ready)));

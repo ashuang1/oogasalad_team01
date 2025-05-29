@@ -91,6 +91,7 @@ public class GameServer {
    */
   public void removeClient(int playerId) {
     clients.remove(playerId);
+    playerReadyMap.remove(playerId);
   }
 
   /**
