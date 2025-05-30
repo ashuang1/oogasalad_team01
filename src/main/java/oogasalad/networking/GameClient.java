@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.function.Consumer;
 import oogasalad.engine.utility.constants.Directions.Direction;
 import oogasalad.networking.util.JsonUtils;
 import oogasalad.player.model.strategies.control.RemoteControlStrategy;
@@ -31,8 +32,9 @@ public class GameClient {
   private final int serverPort;
   private int playerId = -1;
   private boolean isReady = false;
-  private Map<Integer, RemoteControlStrategy> playerIdToRemoteControlStrategy = new HashMap<>();
+  private final Map<Integer, RemoteControlStrategy> playerIdToRemoteControlStrategy = new HashMap<>();
   private Set<Integer> activePlayerIds = new HashSet<>();
+  private Consumer<Map<Integer, Boolean>> playerStatusListener;
   private final ObjectMapper mapper = JsonUtils.getMapper();
 
   /**
@@ -84,19 +86,26 @@ public class GameClient {
     if (message.type() == MessageType.WELCOME && playerId == -1) {
       playerId = message.playerId();
       System.out.println("Received playerId: " + playerId);
+      setReadyStatus(false);
     }
-
-    if (message.type() == MessageType.MOVE) {
+    else if (message.type() == MessageType.MOVE) {
       RemoteControlStrategy strategy = playerIdToRemoteControlStrategy.get(playerId);
       if (strategy != null) {
         strategy.setDirectionFromNetwork((Direction) message.payload().get("direction"));
       }
     }
-
-    if (message.type() == MessageType.START) {
+    else if (message.type() == MessageType.START) {
       Object raw = message.payload().get("playerIds");
       List<Integer> ids = mapper.convertValue(raw, new TypeReference<>() {});
       this.activePlayerIds = new HashSet<>(ids);
+    }
+    else if (message.type() == MessageType.PLAYER_STATUS) {
+      Object raw = message.payload().get("playerStatuses");
+      Map<Integer, Boolean> playerStatuses = mapper.convertValue(raw, new TypeReference<>() {});
+
+      if (playerStatusListener != null) {
+        playerStatusListener.accept(playerStatuses);
+      }
     }
   }
 
@@ -125,6 +134,18 @@ public class GameClient {
   public void setReadyStatus(boolean ready) {
     isReady = ready;
     sendMessage(new GameMessage(MessageType.READY, playerId, Map.of("ready", ready)));
+  }
+
+  /**
+   * Sets a listener to be triggered whenever the client receives updated player ready statuses
+   * from the server. This is typically used to update the lobby UI to reflect which players
+   * are ready or not.
+   *
+   * @param listener a {@code Consumer} that accepts a {@code Map} of player IDs to their
+   *                 ready statuses (true if ready, false otherwise)
+   */
+  public void setPlayerStatusListener(Consumer<Map<Integer, Boolean>> listener) {
+    this.playerStatusListener = listener;
   }
 
   /**
