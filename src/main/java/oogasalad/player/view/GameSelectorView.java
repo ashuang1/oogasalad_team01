@@ -220,7 +220,18 @@ public class GameSelectorView {
   }
 
   private void attemptShowingGamePlayerView(String path, boolean randomize) {
-    if (!myMainController.showGamePlayerView(path, randomize)) {
+    boolean isMultiplayer = false;
+    try {
+      GameConfigRecord config = configParser.loadGameConfig(path + "/gameConfig.json");
+      isMultiplayer = config.settings().isMultiplayer();
+    } catch (ConfigException e) {
+      LoggingManager.LOGGER.warn("Could not load config: {}", path, e);
+    }
+    if (isMultiplayer) {
+      myMainController.showNetworkedGameLobbyView();
+      myMainController.hideGameSelectorView();
+    }
+    else if (!myMainController.showGamePlayerView(path, randomize)) {
       showErrorDialog(getMessage("ERROR"), getMessage("CANNOT_LOAD_GAME"));
     } else {
       myMainController.hideGameSelectorView();
