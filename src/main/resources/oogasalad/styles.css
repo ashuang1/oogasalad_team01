@@ -666,3 +666,7 @@ Label, Text {
   -fx-alignment: center;
   -fx-text-alignment: center;
 }
+
+.lobby-connection-field {
+  -fx-alignment: center;
+}
