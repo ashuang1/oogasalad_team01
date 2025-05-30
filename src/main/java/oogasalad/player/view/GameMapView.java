@@ -42,6 +42,7 @@ public class GameMapView {
     myCanvas = new Canvas(GameView.GAME_VIEW_WIDTH, GameView.GAME_VIEW_HEIGHT);
     myGameContext = gameContext;
     myGameMapController = new GameMapController(myGameContext, configModel);
+    // onGameEnd(status) in GameEndHandlerInterface is set to the method passed as the argument
     myGameMapController.setGameEndHandler(status -> {
       pauseGame();
       if (endGameCallback != null && status != GameEndStatus.PAUSE_ONLY) {

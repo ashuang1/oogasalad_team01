@@ -4,11 +4,12 @@ package oogasalad.networking;
  * Enum representing standard message types exchanged between client and server.
  */
 public enum MessageType {
-  HELLO,
-  WELCOME,
-  READY,
-  START,
-  MOVE,
+  HELLO,              // payload: null
+  WELCOME,            // payload: null
+  READY,              // payload: "ready", boolean
+  PLAYER_STATUS,      // payload: "playerStatuses", Map<Integer, Boolean>
+  START,              // payload: "playerIds", List<Integer>
+  MOVE,               // paylaod: "direction", Direction
   WIN,
   LOSS
 }

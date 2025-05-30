@@ -12,6 +12,7 @@ import oogasalad.player.model.GameState;
 import oogasalad.player.model.api.GameStateFactory;
 import oogasalad.player.view.GameScreenView;
 import oogasalad.player.view.GameSelectorView;
+import oogasalad.player.view.NetworkedGameLobbyView;
 
 /**
  * The main controller of the game engine. This class controls the interactions between the model
@@ -27,6 +28,7 @@ public class MainController {
   private SplashScreenView mySplashScreenView = null;
   private AuthoringView myAuthoringView = null;
   private GameSelectorView myGameSelectorView = null;
+  private NetworkedGameLobbyView myNetworkedGameLobbyView = null;
 
   /**
    * Create a main controller for the program.
@@ -115,7 +117,7 @@ public class MainController {
   }
 
   /**
-   * Show the authoring environment view if not already displayed
+   * Show the authoring environment view if not already displayed.
    */
   public void showAuthoringView() {
     if (myAuthoringView == null) {
@@ -142,6 +144,30 @@ public class MainController {
     }
   }
 
+  /**
+   * Show the networked game lobby view if not already displayed.
+   */
+  public void showNetworkedGameLobbyView() {
+    if (myNetworkedGameLobbyView == null) {
+      myNetworkedGameLobbyView = new NetworkedGameLobbyView(this);
+    }
+    if (!myRoot.getChildren().contains(myNetworkedGameLobbyView.getRoot())) {
+//      myNetworkedGameLobbyView.resetUploadSection();
+      myRoot.getChildren().add(myNetworkedGameLobbyView.getRoot());
+    }
+  }
+
+  /**
+   * Hide the networked game lobby view.
+   */
+  public void hideNetworkedLobbyView() {
+    if (myRoot.getChildren().contains(myNetworkedGameLobbyView.getRoot())) {
+      myRoot.getChildren().remove(myNetworkedGameLobbyView.getRoot());
+    } else {
+      LoggingManager.LOGGER.warn(
+          "Attempted to hide the networked game lobby screen, even though it wasn't being displayed.");
+    }
+  }
 
   /**
    * Get the main stage of this controller.
