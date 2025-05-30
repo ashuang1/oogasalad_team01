@@ -86,13 +86,18 @@ public class NetworkedGameLobbyView {
     titleLabel.setAlignment(Pos.TOP_CENTER);
 
     Button backButton = FormattingUtil.createSmallButton(getMessage("BACK_BUTTON"));
-    backButton.setOnAction(e -> {
-      myMainController.hideNetworkedLobbyView();
-      myMainController.showGameSelectorView();
-    });
+    backButton.setOnAction(e -> handleBackButton());
     VBox topBar = new VBox(10, backButton, titleLabel);
     topBar.getStyleClass().add("game-selector-top-bar");
     return topBar;
+  }
+
+  private void handleBackButton() {
+    myMainController.hideNetworkedLobbyView();
+    myMainController.showGameSelectorView();
+    if (client != null) {
+
+    }
   }
 
   private HBox createConnectionFields() {
