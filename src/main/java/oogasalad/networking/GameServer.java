@@ -2,6 +2,7 @@ package oogasalad.networking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class GameServer {
    * @throws IOException if the server socket cannot be created or bound
    */
   public GameServer(int port) throws IOException {
-    serverSocket = new ServerSocket(port);
+     serverSocket = new ServerSocket(port);
     threadPool = Executors.newCachedThreadPool();
     System.out.println("Server started on port " + port);
   }
