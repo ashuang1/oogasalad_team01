@@ -66,9 +66,18 @@ public class NetworkedGameLobbyView {
     readyButton.setDisable(true);
     readyButton.getStyleClass().add("small-button");
 
+    Label ipInfoLabel = new Label("Your IP: " + getLocalIPAddress());
+
     statusLabel = new Label();
 
-    myRoot.getChildren().addAll(topbar, connectionFields, connectionButtons, playerStatusList, statusLabel, readyButton);
+    myRoot.getChildren().addAll(
+        topbar,
+        connectionFields,
+        connectionButtons,
+        ipInfoLabel,
+        playerStatusList,
+        statusLabel,
+        readyButton);
   }
 
   private VBox createTopBar() {
@@ -134,7 +143,8 @@ public class NetworkedGameLobbyView {
         }
       }).start();
 
-      connectToServer(portNumber);
+      client = new GameClient("localhost", portNumber);
+      updateUiAfterConnectToServer(portNumber);
       statusLabel.setText("Server created on port " + port);
     } catch (Exception e) {
       statusLabel.setText(getMessage("INVALID_PORT"));
@@ -150,13 +160,13 @@ public class NetworkedGameLobbyView {
     }
     // TODO: Connect to server using GameClient
     int portNumber = Integer.parseInt(port);
-    connectToServer(portNumber);
+    client = new GameClient(ip, portNumber);
+    updateUiAfterConnectToServer(portNumber);
 
     statusLabel.setText("Attempting to join " + ip + ":" + port);
   }
 
-  private void connectToServer(int portNumber) {
-    client = new GameClient("localhost", portNumber);
+  private void updateUiAfterConnectToServer(int portNumber) {
     readyButton.setDisable(false);
     createServerButton.setDisable(true);
     joinServerButton.setDisable(true);
@@ -174,6 +184,25 @@ public class NetworkedGameLobbyView {
     } catch (NumberFormatException e) {
       return false;
     }
+  }
+
+  private String getLocalIPAddress() {
+    try {
+      var interfaces = java.net.NetworkInterface.getNetworkInterfaces();
+      while (interfaces.hasMoreElements()) {
+        var iface = interfaces.nextElement();
+        var addresses = iface.getInetAddresses();
+        while (addresses.hasMoreElements()) {
+          var addr = addresses.nextElement();
+          if (!addr.isLoopbackAddress() && addr instanceof java.net.Inet4Address) {
+            return addr.getHostAddress();
+          }
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return "Unavailable";
   }
 
   /**
