@@ -2,7 +2,9 @@ package oogasalad.player.view;
 
 import static oogasalad.engine.utility.LanguageManager.getMessage;
 
+import java.io.IOException;
 import java.util.Map;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -12,14 +14,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import oogasalad.engine.controller.MainController;
-import oogasalad.engine.utility.LanguageManager;
 import oogasalad.engine.utility.constants.GameConfig;
 import oogasalad.engine.view.components.FormattingUtil;
+import oogasalad.networking.GameClient;
+import oogasalad.networking.GameServer;
 
 public class NetworkedGameLobbyView {
 
-  private VBox myRoot;
-  private MainController myMainController;
+  private final VBox myRoot;
+  private final MainController myMainController;
 
   // Lobby Components
   private TextField ipField;
@@ -30,6 +33,9 @@ public class NetworkedGameLobbyView {
   private Button readyButton;
   private boolean isReady = false;
   private Label statusLabel;
+
+  private GameServer server;
+  private GameClient client;
 
   public NetworkedGameLobbyView(MainController controller) {
     this.myMainController = controller;
@@ -106,6 +112,8 @@ public class NetworkedGameLobbyView {
     isReady = !isReady;
     readyButton.setText(isReady ? getMessage("CANCEL_READY") : getMessage("READY"));
     // TODO: send READY message to server
+    client.setReadyStatus(isReady);
+    client.setPlayerStatusListener(this::updatePlayerStatus);
   }
 
   private void handleCreateServer() {
@@ -115,7 +123,22 @@ public class NetworkedGameLobbyView {
       return;
     }
     // TODO: Start server and connect
-    statusLabel.setText("Server created on port " + port);
+    try {
+      int portNumber = Integer.parseInt(port);
+      server = new GameServer(portNumber);
+      new Thread(() -> {
+        try {
+          server.start();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }).start();
+
+      connectToServer(portNumber);
+      statusLabel.setText("Server created on port " + port);
+    } catch (Exception e) {
+      statusLabel.setText(getMessage("INVALID_PORT"));
+    }
   }
 
   private void handleJoinServer() {
@@ -126,7 +149,18 @@ public class NetworkedGameLobbyView {
       return;
     }
     // TODO: Connect to server using GameClient
+    int portNumber = Integer.parseInt(port);
+    connectToServer(portNumber);
+
     statusLabel.setText("Attempting to join " + ip + ":" + port);
+  }
+
+  private void connectToServer(int portNumber) {
+    client = new GameClient("localhost", portNumber);
+    readyButton.setDisable(false);
+    createServerButton.setDisable(true);
+    joinServerButton.setDisable(true);
+    client.setPlayerStatusListener(this::updatePlayerStatus);
   }
 
   private boolean isValidIP(String ip) {
@@ -146,10 +180,12 @@ public class NetworkedGameLobbyView {
    * Called when a new player joins or updates ready status
    */
   public void updatePlayerStatus(Map<Integer, Boolean> playerStatusMap) {
-    playerStatusList.getItems().clear();
-    for (Map.Entry<Integer, Boolean> entry : playerStatusMap.entrySet()) {
-      String status = entry.getValue() ? "READY" : "NOT READY";
-      playerStatusList.getItems().add("Player " + entry.getKey() + ": " + status);
-    }
+    Platform.runLater(() -> {
+      playerStatusList.getItems().clear();
+      for (Map.Entry<Integer, Boolean> entry : playerStatusMap.entrySet()) {
+        String status = entry.getValue() ? "READY" : "NOT READY";
+        playerStatusList.getItems().add("Player " + entry.getKey() + ": " + status);
+      }
+    });
   }
 }
