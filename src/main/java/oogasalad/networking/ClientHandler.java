@@ -34,6 +34,7 @@ public class ClientHandler implements Runnable {
         // deserialize
         GameMessage message = mapper.readValue(jsonLine, GameMessage.class);
         System.out.println("Player " + playerId + ": " + message);
+
         if (message.type() == MessageType.HELLO && message.playerId() == -1) {
           assignPlayerIdToClient();
           continue;
@@ -47,14 +48,20 @@ public class ClientHandler implements Runnable {
           continue;
         }
 
+        if (message.type() == MessageType.DISCONNECT) {
+          System.out.println("Player " + playerId + " disconnected.");
+          server.removeClient(playerId);
+          break;
+        }
+
         server.broadcast(message);
       }
     } catch (IOException e) {
       System.out.println("Player " + playerId + " disconnected: " + e.getMessage());
     } finally {
       try {
-        socket.close();
         server.removeClient(playerId);
+        socket.close();
       } catch (IOException ignored) {}
     }
   }
@@ -67,5 +74,13 @@ public class ClientHandler implements Runnable {
 
   public void send(String message) {
     out.println(message);
+  }
+
+  public void close() {
+    try {
+      socket.close();
+    } catch (IOException e) {
+      System.err.println("Error closing socket: " + e.getMessage());
+    }
   }
 }
