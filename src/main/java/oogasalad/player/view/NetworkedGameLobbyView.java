@@ -103,13 +103,13 @@ public class NetworkedGameLobbyView {
     if (client != null) {
       client.disconnect();
       updateUiOnConnectOrDisconnect(false);
-      if (server != null) {
-        Platform.runLater(() -> {
-          server.stop();
-        });
-      }
       playerStatusList.getItems().clear();
       client = null;
+    }
+    if (server != null) {
+      Platform.runLater(() -> {
+        server.stop();
+      });
     }
   }
 
@@ -184,15 +184,20 @@ public class NetworkedGameLobbyView {
     int portNumber = Integer.parseInt(port);
     client = new GameClient(ip, portNumber);
     updateUiOnConnectOrDisconnect(true);
+    client.setDisconnectListener(() -> {
+      updateUiOnConnectOrDisconnect(false);
+      playerStatusList.getItems().clear();
+    });
 
     statusLabel.setText("Attempting to join " + ip + ":" + port);
   }
 
   private void updateUiOnConnectOrDisconnect(boolean isConnected) {
-    readyButton.setDisable(!isConnected);
     createServerButton.setDisable(isConnected);
     joinServerButton.setDisable(isConnected);
     leaveServerButton.setDisable(!isConnected);
+    readyButton.setDisable(!isConnected);
+    statusLabel.setText(isConnected ? getMessage("CONNECTED") : getMessage("DISCONNECTED"));
     client.setPlayerStatusListener(this::updatePlayerStatus);
   }
 

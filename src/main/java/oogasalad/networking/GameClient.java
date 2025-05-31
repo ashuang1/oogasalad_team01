@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.function.Consumer;
+import javafx.application.Platform;
 import oogasalad.engine.utility.constants.Directions.Direction;
 import oogasalad.networking.util.JsonUtils;
 import oogasalad.player.model.strategies.control.RemoteControlStrategy;
@@ -37,6 +38,7 @@ public class GameClient {
   private final Map<Integer, RemoteControlStrategy> playerIdToRemoteControlStrategy = new HashMap<>();
   private Set<Integer> activePlayerIds = new HashSet<>();
   private Consumer<Map<Integer, Boolean>> playerStatusListener;
+  private Runnable disconnectListener;
   private final ObjectMapper mapper = JsonUtils.getMapper();
 
   /**
@@ -79,6 +81,23 @@ public class GameClient {
       }
     } catch (IOException e) {
       System.out.println("Disconnected from server: " + e.getMessage());
+      notifyDisconnected();
+    }
+  }
+
+  /**
+   * Sets a callback to be executed when the client detects an unexpected disconnection
+   * from the server (e.g., due to server shutdown or network failure).
+   *
+   * @param listener a {@code Runnable} to run on the JavaFX Application Thread when disconnected
+   */
+  public void setDisconnectListener(Runnable listener) {
+    this.disconnectListener = listener;
+  }
+
+  private void notifyDisconnected() {
+    if (disconnectListener != null) {
+      Platform.runLater(disconnectListener);
     }
   }
 
