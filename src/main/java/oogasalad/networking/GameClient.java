@@ -149,6 +149,18 @@ public class GameClient {
   }
 
   /**
+   * Sends DISCONNECT message to server and closes socket.
+   */
+  public void disconnect() {
+    try {
+      sendMessage(new GameMessage(MessageType.DISCONNECT, playerId, null));
+      if (socket != null && !socket.isClosed()) {
+        socket.close();
+      }
+    } catch (IOException ignored) {}
+  }
+
+  /**
    * Closes the client's connection to the server.
    *
    * @throws IOException if an I/O error occurs while closing the socket
