@@ -20,6 +20,8 @@ import oogasalad.networking.util.JsonUtils;
  * and launches a {@link ClientHandler} for each connected client.
  * <p>
  * This class also manages message broadcasting and client disconnection.
+ *
+ * @author Austin Huang
  */
 public class GameServer {
 
@@ -27,6 +29,7 @@ public class GameServer {
 
   private final ServerSocket serverSocket;
   private final ExecutorService threadPool;
+  private boolean isRunning = true;
   private final Map<Integer, ClientHandler> clients = new ConcurrentHashMap<>();
   private int nextPlayerId = 1;
   private final Map<Integer, Boolean> playerReadyMap = new ConcurrentHashMap<>();
@@ -54,7 +57,7 @@ public class GameServer {
    */
   public void start() throws IOException {
     try {
-      while (true) {
+      while (isRunning) {
         Socket clientSocket = serverSocket.accept();
         int playerId = nextPlayerId++;
         ClientHandler handler = new ClientHandler(clientSocket, playerId, this);
@@ -63,7 +66,9 @@ public class GameServer {
         System.out.println("Player " + playerId + " connected.");
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      if (isRunning) {
+        e.printStackTrace(); // only print if server wasn't stopped intentionally
+      }
     }
   }
 
@@ -92,6 +97,7 @@ public class GameServer {
   public void removeClient(int playerId) {
     clients.remove(playerId);
     playerReadyMap.remove(playerId);
+    broadcastUpdatedPlayerStatuses();
   }
 
   /**
@@ -123,6 +129,26 @@ public class GameServer {
   private boolean checkAllPlayersReady() {
     return !playerReadyMap.isEmpty() &&
         playerReadyMap.values().stream().allMatch(Boolean::booleanValue);
+  }
+
+  /**
+   * Gracefully shuts down the game server by closing the server socket, disconnecting all connected
+   * clients, and terminating the thread pool.
+   */
+  public void stop() {
+    isRunning = false;
+    try {
+      serverSocket.close();
+    } catch (IOException e) {
+      System.err.println("Error closing server socket: " + e.getMessage());
+    }
+
+    for (ClientHandler client : clients.values()) {
+      client.close();
+    }
+
+    threadPool.shutdownNow();
+    System.out.println("Server shut down.");
   }
 
   public static void main(String[] args) throws IOException {
