@@ -22,6 +22,8 @@ import oogasalad.player.model.strategies.control.RemoteControlStrategy;
  * Handles the client-side networking logic for a multiplayer game.
  * Connects to the game server, sends player input as JSON-encoded messages,
  * and listens for server responses to update local game state.
+ *
+ * @author Austin Huang
  */
 public class GameClient {
 
@@ -146,6 +148,18 @@ public class GameClient {
    */
   public void setPlayerStatusListener(Consumer<Map<Integer, Boolean>> listener) {
     this.playerStatusListener = listener;
+  }
+
+  /**
+   * Sends DISCONNECT message to server and closes socket.
+   */
+  public void disconnect() {
+    try {
+      sendMessage(new GameMessage(MessageType.DISCONNECT, playerId, null));
+      if (socket != null && !socket.isClosed()) {
+        socket.close();
+      }
+    } catch (IOException ignored) {}
   }
 
   /**
