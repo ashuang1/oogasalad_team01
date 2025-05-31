@@ -15,6 +15,7 @@ import oogasalad.networking.MessageType;
 public class GameMessageDispatcher {
 
   private final Map<MessageType, Consumer<GameMessage>> handlers = new HashMap<>();
+  private Consumer<GameMessage> defaultHandler;
 
   /**
    * Registers a handler function for a specific {@link MessageType}.
@@ -33,11 +34,13 @@ public class GameMessageDispatcher {
    */
   public void dispatch(GameMessage message) {
     System.out.println("Server: " + message);
-    Consumer<GameMessage> handler = handlers.get(message.type());
+    Consumer<GameMessage> handler = handlers.getOrDefault(message.type(), defaultHandler);
     if (handler != null) {
       handler.accept(message);
-    } else {
-      System.out.println("Unhandled message type: " + message.type());
     }
+  }
+
+  public void setDefaultHandler(Consumer<GameMessage> handler) {
+    this.defaultHandler = handler;
   }
 }
