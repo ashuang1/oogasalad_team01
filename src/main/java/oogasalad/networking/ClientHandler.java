@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import oogasalad.networking.util.GameMessageDispatcher;
 import oogasalad.networking.util.JsonUtils;
 
 /**
@@ -26,6 +27,7 @@ public class ClientHandler implements Runnable {
   private final BufferedReader in;
   private final PrintWriter out;
   private final GameServer server;
+  private GameMessageDispatcher messageDispatcher = new GameMessageDispatcher();
   private final ObjectMapper mapper = JsonUtils.getMapper();
 
   /**
@@ -42,6 +44,7 @@ public class ClientHandler implements Runnable {
     this.server = server;
     this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     this.out = new PrintWriter(socket.getOutputStream(), true);
+    initializeMessageHandlers();
   }
 
   /**
@@ -61,27 +64,7 @@ public class ClientHandler implements Runnable {
         // deserialize
         GameMessage message = mapper.readValue(jsonLine, GameMessage.class);
         System.out.println("Player " + playerId + ": " + message);
-
-        if (message.type() == MessageType.HELLO && message.playerId() == -1) {
-          assignPlayerIdToClient();
-          continue;
-        }
-
-        if (message.type() == MessageType.READY) {
-          Object readyObject = message.payload().get("ready");
-          if (readyObject instanceof Boolean ready) {
-            server.handleReadyMessage(playerId, ready);
-          }
-          continue;
-        }
-
-        if (message.type() == MessageType.DISCONNECT) {
-          System.out.println("Player " + playerId + " disconnected.");
-          server.removeClient(playerId);
-          break;
-        }
-
-        server.broadcast(message);
+        messageDispatcher.dispatch(message);
       }
     } catch (IOException e) {
       System.out.println("Player " + playerId + " disconnected: " + e.getMessage());
@@ -91,6 +74,35 @@ public class ClientHandler implements Runnable {
         socket.close();
       } catch (IOException ignored) {}
     }
+  }
+
+  private void initializeMessageHandlers() {
+    messageDispatcher.registerHandler(MessageType.HELLO, this::handleHello);
+    messageDispatcher.registerHandler(MessageType.READY, this::handleReady);
+    messageDispatcher.registerHandler(MessageType.DISCONNECT, this::handleDisconnect);
+    messageDispatcher.setDefaultHandler(server::broadcast);
+  }
+
+  private void handleHello(GameMessage message) {
+    if (message.playerId() == -1) {
+      try {
+        assignPlayerIdToClient();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  private void handleReady(GameMessage message) {
+    Object readyObject = message.payload().get("ready");
+    if (readyObject instanceof Boolean ready) {
+      server.handleReadyMessage(playerId, ready);
+    }
+  }
+
+  private void handleDisconnect(GameMessage message) {
+    System.out.println("Player " + playerId + " disconnected.");
+    server.removeClient(playerId);
   }
 
   private void assignPlayerIdToClient() throws JsonProcessingException {

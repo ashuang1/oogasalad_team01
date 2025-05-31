@@ -18,6 +18,7 @@ import oogasalad.engine.utility.constants.GameConfig;
 import oogasalad.engine.view.components.FormattingUtil;
 import oogasalad.networking.GameClient;
 import oogasalad.networking.GameServer;
+import oogasalad.player.controller.LobbyNetworkController;
 
 public class NetworkedGameLobbyView {
 
@@ -35,8 +36,7 @@ public class NetworkedGameLobbyView {
   private boolean isReady = false;
   private Label statusLabel;
 
-  private GameServer server;
-  private GameClient client;
+  private final LobbyNetworkController lobbyNetworkController = new LobbyNetworkController();
 
   public NetworkedGameLobbyView(MainController controller) {
     this.myMainController = controller;
@@ -67,7 +67,7 @@ public class NetworkedGameLobbyView {
     readyButton.setDisable(true);
     readyButton.getStyleClass().add("small-button");
 
-    Label ipInfoLabel = new Label("Your IP: " + getLocalIPAddress());
+    Label ipInfoLabel = new Label("Your IP: " + lobbyNetworkController.getLocalIpAddress());
 
     statusLabel = new Label();
 
@@ -100,17 +100,9 @@ public class NetworkedGameLobbyView {
   }
 
   private void handleDisconnect() {
-    if (client != null) {
-      client.disconnect();
-      updateUiOnConnectOrDisconnect(false);
-      playerStatusList.getItems().clear();
-      client = null;
-    }
-    if (server != null) {
-      Platform.runLater(() -> {
-        server.stop();
-      });
-    }
+    lobbyNetworkController.disconnect();
+    updateUiOnConnectOrDisconnect(lobbyNetworkController.isConnected());
+    playerStatusList.getItems().clear();
   }
 
   private HBox createConnectionFields() {
@@ -142,7 +134,7 @@ public class NetworkedGameLobbyView {
   private void toggleReady() {
     isReady = !isReady;
     readyButton.setText(isReady ? getMessage("CANCEL_READY") : getMessage("READY"));
-    // TODO: send READY message to server
+    GameClient client = lobbyNetworkController.getClient();
     client.setReadyStatus(isReady);
     client.setPlayerStatusListener(this::updatePlayerStatus);
   }
@@ -153,20 +145,10 @@ public class NetworkedGameLobbyView {
       statusLabel.setText(getMessage("INVALID_PORT"));
       return;
     }
-    // TODO: Start server and connect
     try {
       int portNumber = Integer.parseInt(port);
-      server = new GameServer(portNumber);
-      new Thread(() -> {
-        try {
-          server.start();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }).start();
-
-      client = new GameClient("localhost", portNumber);
-      updateUiOnConnectOrDisconnect(true);
+      lobbyNetworkController.startServer(portNumber);
+      updateUiOnConnectOrDisconnect(lobbyNetworkController.isConnected());
       statusLabel.setText("Server created on port " + port);
     } catch (Exception e) {
       statusLabel.setText(getMessage("INVALID_PORT"));
@@ -176,16 +158,17 @@ public class NetworkedGameLobbyView {
   private void handleJoinServer() {
     String ip = ipField.getText();
     String port = portField.getText();
-    if (!isValidIP(ip)|| !isValidPort(port)) {
+    if (!(isValidIP(ip) && isValidPort(port) && lobbyNetworkController.isServerReachable(ip, Integer.parseInt(port)) )) {
       statusLabel.setText(getMessage("INVALID_IP_PORT"));
       return;
     }
-    // TODO: Connect to server using GameClient
+
     int portNumber = Integer.parseInt(port);
-    client = new GameClient(ip, portNumber);
-    updateUiOnConnectOrDisconnect(true);
+    lobbyNetworkController.joinServer(ip, portNumber);
+    GameClient client = lobbyNetworkController.getClient();
+    updateUiOnConnectOrDisconnect(lobbyNetworkController.isConnected());
     client.setDisconnectListener(() -> {
-      updateUiOnConnectOrDisconnect(false);
+      setConnectionUiState(false);
       playerStatusList.getItems().clear();
     });
 
@@ -193,14 +176,19 @@ public class NetworkedGameLobbyView {
   }
 
   private void updateUiOnConnectOrDisconnect(boolean isConnected) {
+    setConnectionUiState(isConnected);
+    GameClient client = lobbyNetworkController.getClient();
+    if (isConnected && client != null) {
+      client.setPlayerStatusListener(this::updatePlayerStatus);
+    }
+  }
+
+  private void setConnectionUiState(boolean isConnected) {
     createServerButton.setDisable(isConnected);
     joinServerButton.setDisable(isConnected);
     leaveServerButton.setDisable(!isConnected);
     readyButton.setDisable(!isConnected);
     statusLabel.setText(isConnected ? getMessage("CONNECTED") : getMessage("DISCONNECTED"));
-    if (isConnected && client != null) {
-      client.setPlayerStatusListener(this::updatePlayerStatus);
-    }
   }
 
   private boolean isValidIP(String ip) {
@@ -214,25 +202,6 @@ public class NetworkedGameLobbyView {
     } catch (NumberFormatException e) {
       return false;
     }
-  }
-
-  private String getLocalIPAddress() {
-    try {
-      var interfaces = java.net.NetworkInterface.getNetworkInterfaces();
-      while (interfaces.hasMoreElements()) {
-        var iface = interfaces.nextElement();
-        var addresses = iface.getInetAddresses();
-        while (addresses.hasMoreElements()) {
-          var addr = addresses.nextElement();
-          if (!addr.isLoopbackAddress() && addr instanceof java.net.Inet4Address) {
-            return addr.getHostAddress();
-          }
-        }
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return "Unavailable";
   }
 
   /**
