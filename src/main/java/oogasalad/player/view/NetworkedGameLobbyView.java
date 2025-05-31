@@ -29,6 +29,7 @@ public class NetworkedGameLobbyView {
   private TextField portField;
   private Button createServerButton;
   private Button joinServerButton;
+  private Button leaveServerButton;
   private ListView<String> playerStatusList;
   private Button readyButton;
   private boolean isReady = false;
@@ -95,8 +96,20 @@ public class NetworkedGameLobbyView {
   private void handleBackButton() {
     myMainController.hideNetworkedLobbyView();
     myMainController.showGameSelectorView();
-    if (client != null) {
+    handleDisconnect();
+  }
 
+  private void handleDisconnect() {
+    if (client != null) {
+      client.disconnect();
+      updateUiOnConnectOrDisconnect(false);
+      if (server != null) {
+        Platform.runLater(() -> {
+          server.stop();
+        });
+      }
+      playerStatusList.getItems().clear();
+      client = null;
     }
   }
 
@@ -117,7 +130,11 @@ public class NetworkedGameLobbyView {
     joinServerButton = new Button(getMessage("JOIN_SERVER_BUTTON"));
     joinServerButton.setOnAction(e -> handleJoinServer());
     joinServerButton.getStyleClass().add("small-button");
-    HBox box = new HBox(10, createServerButton, joinServerButton);
+    leaveServerButton = new Button(getMessage("LEAVE_SERVER_BUTTON"));
+    leaveServerButton.setOnAction(e -> handleDisconnect());
+    leaveServerButton.setDisable(true);
+    leaveServerButton.getStyleClass().add("small-button");
+    HBox box = new HBox(10, createServerButton, joinServerButton, leaveServerButton);
     box.getStyleClass().add("lobby-connection-field");
     return box;
   }
@@ -149,7 +166,7 @@ public class NetworkedGameLobbyView {
       }).start();
 
       client = new GameClient("localhost", portNumber);
-      updateUiAfterConnectToServer(portNumber);
+      updateUiOnConnectOrDisconnect(true);
       statusLabel.setText("Server created on port " + port);
     } catch (Exception e) {
       statusLabel.setText(getMessage("INVALID_PORT"));
@@ -166,15 +183,16 @@ public class NetworkedGameLobbyView {
     // TODO: Connect to server using GameClient
     int portNumber = Integer.parseInt(port);
     client = new GameClient(ip, portNumber);
-    updateUiAfterConnectToServer(portNumber);
+    updateUiOnConnectOrDisconnect(true);
 
     statusLabel.setText("Attempting to join " + ip + ":" + port);
   }
 
-  private void updateUiAfterConnectToServer(int portNumber) {
-    readyButton.setDisable(false);
-    createServerButton.setDisable(true);
-    joinServerButton.setDisable(true);
+  private void updateUiOnConnectOrDisconnect(boolean isConnected) {
+    readyButton.setDisable(!isConnected);
+    createServerButton.setDisable(isConnected);
+    joinServerButton.setDisable(isConnected);
+    leaveServerButton.setDisable(!isConnected);
     client.setPlayerStatusListener(this::updatePlayerStatus);
   }
 
