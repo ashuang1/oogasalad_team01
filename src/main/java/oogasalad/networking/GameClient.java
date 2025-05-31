@@ -35,8 +35,10 @@ public class GameClient {
   private final int serverPort;
   private int playerId = -1;
   private boolean isReady = false;
+  private Map<MessageType, Consumer<GameMessage>> messageHandlers = new HashMap<>();
   private final Map<Integer, RemoteControlStrategy> playerIdToRemoteControlStrategy = new HashMap<>();
   private Set<Integer> activePlayerIds = new HashSet<>();
+
   private Consumer<Map<Integer, Boolean>> playerStatusListener;
   private Runnable disconnectListener;
   private final ObjectMapper mapper = JsonUtils.getMapper();
@@ -86,48 +88,49 @@ public class GameClient {
     }
   }
 
-  /**
-   * Sets a callback to be executed when the client detects an unexpected disconnection
-   * from the server (e.g., due to server shutdown or network failure).
-   *
-   * @param listener a {@code Runnable} to run on the JavaFX Application Thread when disconnected
-   */
-  public void setDisconnectListener(Runnable listener) {
-    this.disconnectListener = listener;
+  private void initializeMessageHandlers() {
+    messageHandlers.put(MessageType.WELCOME, this::handleWelcome);
+    messageHandlers.put(MessageType.PLAYER_STATUS, this::handlePlayerStatus);
+    messageHandlers.put(MessageType.START, this::handleStart);
+    messageHandlers.put(MessageType.MOVE, this::handleMove);
   }
 
-  private void notifyDisconnected() {
-    if (disconnectListener != null) {
-      Platform.runLater(disconnectListener);
+  private void handleWelcome(GameMessage message) {
+    if (playerId == -1) {
+      playerId = message.playerId();
+      setReadyStatus(false);
+    }
+  }
+
+  private void handlePlayerStatus(GameMessage message) {
+    Object raw = message.payload().get("playerStatuses");
+    Map<Integer, Boolean> playerStatuses = mapper.convertValue(raw, new TypeReference<>() {});
+
+    if (playerStatusListener != null) {
+      playerStatusListener.accept(playerStatuses);
+    }
+  }
+
+  private void handleStart(GameMessage message) {
+    Object raw = message.payload().get("playerIds");
+    List<Integer> ids = mapper.convertValue(raw, new TypeReference<>() {});
+    this.activePlayerIds = new HashSet<>(ids);
+  }
+
+  private void handleMove(GameMessage message) {
+    RemoteControlStrategy strategy = playerIdToRemoteControlStrategy.get(playerId);
+    if (strategy != null) {
+      strategy.setDirectionFromNetwork((Direction) message.payload().get("direction"));
     }
   }
 
   private void handleMessage(GameMessage message) {
     System.out.println("Server: " + message);
-    // TODO: parse and forward to RemoteControlStrategy or game view
-    if (message.type() == MessageType.WELCOME && playerId == -1) {
-      playerId = message.playerId();
-      System.out.println("Received playerId: " + playerId);
-      setReadyStatus(false);
-    }
-    else if (message.type() == MessageType.MOVE) {
-      RemoteControlStrategy strategy = playerIdToRemoteControlStrategy.get(playerId);
-      if (strategy != null) {
-        strategy.setDirectionFromNetwork((Direction) message.payload().get("direction"));
-      }
-    }
-    else if (message.type() == MessageType.START) {
-      Object raw = message.payload().get("playerIds");
-      List<Integer> ids = mapper.convertValue(raw, new TypeReference<>() {});
-      this.activePlayerIds = new HashSet<>(ids);
-    }
-    else if (message.type() == MessageType.PLAYER_STATUS) {
-      Object raw = message.payload().get("playerStatuses");
-      Map<Integer, Boolean> playerStatuses = mapper.convertValue(raw, new TypeReference<>() {});
-
-      if (playerStatusListener != null) {
-        playerStatusListener.accept(playerStatuses);
-      }
+    Consumer<GameMessage> handler = messageHandlers.get(message.type());
+    if (handler != null) {
+      handler.accept(message);
+    } else {
+      System.out.println("Unhandled message type: " + message.type());
     }
   }
 
@@ -167,6 +170,22 @@ public class GameClient {
    */
   public void setPlayerStatusListener(Consumer<Map<Integer, Boolean>> listener) {
     this.playerStatusListener = listener;
+  }
+
+  /**
+   * Sets a callback to be executed when the client detects an unexpected disconnection
+   * from the server (e.g., due to server shutdown or network failure).
+   *
+   * @param listener a {@code Runnable} to run on the JavaFX Application Thread when disconnected
+   */
+  public void setDisconnectListener(Runnable listener) {
+    this.disconnectListener = listener;
+  }
+
+  private void notifyDisconnected() {
+    if (disconnectListener != null) {
+      Platform.runLater(disconnectListener);
+    }
   }
 
   /**
