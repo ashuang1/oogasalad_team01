@@ -198,7 +198,9 @@ public class NetworkedGameLobbyView {
     leaveServerButton.setDisable(!isConnected);
     readyButton.setDisable(!isConnected);
     statusLabel.setText(isConnected ? getMessage("CONNECTED") : getMessage("DISCONNECTED"));
-    client.setPlayerStatusListener(this::updatePlayerStatus);
+    if (isConnected && client != null) {
+      client.setPlayerStatusListener(this::updatePlayerStatus);
+    }
   }
 
   private boolean isValidIP(String ip) {
