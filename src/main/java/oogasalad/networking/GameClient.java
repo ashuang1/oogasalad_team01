@@ -79,6 +79,7 @@ public class GameClient {
         GameMessage message = mapper.readValue(jsonLine, GameMessage.class);
         handleMessage(message);
       }
+      notifyDisconnected();
     } catch (IOException e) {
       System.out.println("Disconnected from server: " + e.getMessage());
       notifyDisconnected();
