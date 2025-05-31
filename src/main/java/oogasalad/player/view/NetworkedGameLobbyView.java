@@ -38,9 +38,6 @@ public class NetworkedGameLobbyView {
 
   private final LobbyNetworkController lobbyNetworkController = new LobbyNetworkController();
 
-//  private GameServer server;
-//  private GameClient client;
-
   public NetworkedGameLobbyView(MainController controller) {
     this.myMainController = controller;
     myRoot = new VBox(15);
@@ -70,7 +67,7 @@ public class NetworkedGameLobbyView {
     readyButton.setDisable(true);
     readyButton.getStyleClass().add("small-button");
 
-    Label ipInfoLabel = new Label("Your IP: " + getLocalIPAddress());
+    Label ipInfoLabel = new Label("Your IP: " + lobbyNetworkController.getLocalIpAddress());
 
     statusLabel = new Label();
 
@@ -161,7 +158,7 @@ public class NetworkedGameLobbyView {
   private void handleJoinServer() {
     String ip = ipField.getText();
     String port = portField.getText();
-    if (!isValidIP(ip)|| !isValidPort(port)) {
+    if (!(isValidIP(ip) && isValidPort(port) && lobbyNetworkController.isServerReachable(ip, Integer.parseInt(port)) )) {
       statusLabel.setText(getMessage("INVALID_IP_PORT"));
       return;
     }
@@ -205,25 +202,6 @@ public class NetworkedGameLobbyView {
     } catch (NumberFormatException e) {
       return false;
     }
-  }
-
-  private String getLocalIPAddress() {
-    try {
-      var interfaces = java.net.NetworkInterface.getNetworkInterfaces();
-      while (interfaces.hasMoreElements()) {
-        var iface = interfaces.nextElement();
-        var addresses = iface.getInetAddresses();
-        while (addresses.hasMoreElements()) {
-          var addr = addresses.nextElement();
-          if (!addr.isLoopbackAddress() && addr instanceof java.net.Inet4Address) {
-            return addr.getHostAddress();
-          }
-        }
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return "Unavailable";
   }
 
   /**

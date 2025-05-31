@@ -1,6 +1,8 @@
 package oogasalad.player.controller;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import javafx.application.Platform;
 import oogasalad.networking.GameClient;
 import oogasalad.networking.GameServer;
@@ -52,6 +54,44 @@ public class LobbyNetworkController {
         server.stop();
       });
     }
+  }
+
+  /**
+   * Finds if server with ip and port passed in is reachable.
+   *
+   * @param ip address of server trying to be reached
+   * @param port of server trying to be reached
+   * @return true if server is reachable
+   */
+  public boolean isServerReachable(String ip, int port) {
+    try (Socket socket = new Socket()) {
+      socket.connect(new InetSocketAddress(ip, port), 1000);
+      return true;
+    } catch (IOException e) {
+      return false;
+    }
+  }
+
+  /**
+   * @return the local IP address of computer
+   */
+  public String getLocalIpAddress() {
+    try {
+      var interfaces = java.net.NetworkInterface.getNetworkInterfaces();
+      while (interfaces.hasMoreElements()) {
+        var iface = interfaces.nextElement();
+        var addresses = iface.getInetAddresses();
+        while (addresses.hasMoreElements()) {
+          var addr = addresses.nextElement();
+          if (!addr.isLoopbackAddress() && addr instanceof java.net.Inet4Address) {
+            return addr.getHostAddress();
+          }
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return "Local IP Unavailable";
   }
 
   /**
