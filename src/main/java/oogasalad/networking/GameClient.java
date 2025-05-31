@@ -22,6 +22,8 @@ import oogasalad.player.model.strategies.control.RemoteControlStrategy;
  * Handles the client-side networking logic for a multiplayer game.
  * Connects to the game server, sends player input as JSON-encoded messages,
  * and listens for server responses to update local game state.
+ *
+ * @author Austin Huang
  */
 public class GameClient {
 
