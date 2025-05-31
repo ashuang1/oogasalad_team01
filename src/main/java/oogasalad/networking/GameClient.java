@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import javafx.application.Platform;
 import oogasalad.engine.utility.constants.Directions.Direction;
+import oogasalad.networking.util.GameMessageDispatcher;
 import oogasalad.networking.util.JsonUtils;
 import oogasalad.player.model.strategies.control.RemoteControlStrategy;
 
@@ -35,7 +36,7 @@ public class GameClient {
   private final int serverPort;
   private int playerId = -1;
   private boolean isReady = false;
-  private Map<MessageType, Consumer<GameMessage>> messageHandlers = new HashMap<>();
+  private GameMessageDispatcher messageDispatcher = new GameMessageDispatcher();
   private final Map<Integer, RemoteControlStrategy> playerIdToRemoteControlStrategy = new HashMap<>();
   private Set<Integer> activePlayerIds = new HashSet<>();
 
@@ -64,6 +65,9 @@ public class GameClient {
       socket = new Socket(serverIP, serverPort);
       in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
       out = new PrintWriter(socket.getOutputStream(), true);
+
+      initializeMessageHandlers();
+
       GameMessage hello = new GameMessage(MessageType.HELLO, playerId, null);
       sendMessage(hello);
 
@@ -88,11 +92,15 @@ public class GameClient {
     }
   }
 
+  private void handleMessage(GameMessage message) {
+    messageDispatcher.dispatch(message);
+  }
+
   private void initializeMessageHandlers() {
-    messageHandlers.put(MessageType.WELCOME, this::handleWelcome);
-    messageHandlers.put(MessageType.PLAYER_STATUS, this::handlePlayerStatus);
-    messageHandlers.put(MessageType.START, this::handleStart);
-    messageHandlers.put(MessageType.MOVE, this::handleMove);
+    messageDispatcher.registerHandler(MessageType.WELCOME, this::handleWelcome);
+    messageDispatcher.registerHandler(MessageType.PLAYER_STATUS, this::handlePlayerStatus);
+    messageDispatcher.registerHandler(MessageType.START, this::handleStart);
+    messageDispatcher.registerHandler(MessageType.MOVE, this::handleMove);
   }
 
   private void handleWelcome(GameMessage message) {
@@ -121,16 +129,6 @@ public class GameClient {
     RemoteControlStrategy strategy = playerIdToRemoteControlStrategy.get(playerId);
     if (strategy != null) {
       strategy.setDirectionFromNetwork((Direction) message.payload().get("direction"));
-    }
-  }
-
-  private void handleMessage(GameMessage message) {
-    System.out.println("Server: " + message);
-    Consumer<GameMessage> handler = messageHandlers.get(message.type());
-    if (handler != null) {
-      handler.accept(message);
-    } else {
-      System.out.println("Unhandled message type: " + message.type());
     }
   }
 
