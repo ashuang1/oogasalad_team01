@@ -32,7 +32,8 @@ public class GameServer {
   private boolean isRunning = true;
   private final Map<Integer, ClientHandler> clients = new ConcurrentHashMap<>();
   private int nextPlayerId = 1;
-  private final Map<Integer, Boolean> playerReadyMap = new ConcurrentHashMap<>();
+//  private final Map<Integer, Boolean> playerReadyMap = new ConcurrentHashMap<>();
+  private LobbyStateManager lobbyStateManager = new LobbyStateManager();
   private final ObjectMapper mapper = JsonUtils.getMapper();
 
   /**
@@ -96,7 +97,7 @@ public class GameServer {
    */
   public void removeClient(int playerId) {
     clients.remove(playerId);
-    playerReadyMap.remove(playerId);
+    lobbyStateManager.removePlayer(playerId);
     broadcastUpdatedPlayerStatuses();
   }
 
@@ -108,12 +109,12 @@ public class GameServer {
    * @param isReady ready status of player
    */
   public void handleReadyMessage(int playerId, boolean isReady) {
-    playerReadyMap.put(playerId, isReady);
+    lobbyStateManager.updateReady(playerId, isReady);
     broadcastUpdatedPlayerStatuses();
 
     if (checkAllPlayersReady()) {
       Map<String, Object> payload = new HashMap<>();
-      payload.put("playerIds", new ArrayList<>(playerReadyMap.keySet()));
+      payload.put("playerIds", new ArrayList<>(lobbyStateManager.getAllStatuses().keySet()));
       GameMessage startMessage = new GameMessage(MessageType.START, -1, payload);
       broadcast(startMessage);
     }
@@ -121,14 +122,13 @@ public class GameServer {
 
   private void broadcastUpdatedPlayerStatuses() {
     Map<String, Object> statusPayload = new HashMap<>();
-    statusPayload.put("playerStatuses", new HashMap<>(playerReadyMap));
+    statusPayload.put("playerStatuses", new HashMap<>(lobbyStateManager.getAllStatuses()));
     GameMessage statusMessage = new GameMessage(MessageType.PLAYER_STATUS, -1, statusPayload);
     broadcast(statusMessage);
   }
 
   private boolean checkAllPlayersReady() {
-    return !playerReadyMap.isEmpty() &&
-        playerReadyMap.values().stream().allMatch(Boolean::booleanValue);
+    return lobbyStateManager.allReady();
   }
 
   /**
