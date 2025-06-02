@@ -20,7 +20,8 @@
         "targetCalculationConfig": {
           "targetCalculationStrategy": "TargetEntity",
           "targetType": "Pacman"
-        }
+        },
+        "player": 5
       },
       "movementSpeed": 1.0
     },
