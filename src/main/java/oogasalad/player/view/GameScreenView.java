@@ -3,6 +3,7 @@ package oogasalad.player.view;
 import static oogasalad.engine.utility.constants.GameConfig.HEIGHT;
 import static oogasalad.engine.utility.constants.GameConfig.WIDTH;
 
+import java.util.Set;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.layout.VBox;
@@ -68,6 +69,21 @@ public class GameScreenView {
     hudUpdater.play();
   }
 
+  /**
+   * Create a game screen view for networked games.
+   *
+   * @param controller     The main controller for the player view.
+   * @param gameState      The game state object for this current game.
+   * @param gameFolderPath name of game folder to create game from.
+   * @param randomized     if levels should be randomized
+   * @param myPlayerId     client's player id
+   * @param activePlayerIds set of active player ids from server
+   */
+  public GameScreenView(MainController controller, GameStateInterface gameState,
+      String gameFolderPath, boolean randomized, int myPlayerId, Set<Integer> activePlayerIds) {
+    this(controller, gameState, gameFolderPath, randomized);
+    myGamePlayerView.setPlayerContext(myPlayerId, activePlayerIds);
+  }
 
   /**
    * Get the root VBox for this view.
