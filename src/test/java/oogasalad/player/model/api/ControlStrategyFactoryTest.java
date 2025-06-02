@@ -80,7 +80,7 @@ public class ControlStrategyFactoryTest {
 
   @Test
   void createControlStrategy_conditionalControl_strategyCreated() {
-    mockControlConfig(new ConditionalControlConfigRecord(5, "A*", "Dijkstra", null));
+    mockControlConfig(new ConditionalControlConfigRecord(5, "A*", "Dijkstra", null, null));
 
     ControlStrategyInterface strategy = ControlStrategyFactory.createControlStrategy(mockInput,
         mockPlacement, mockMap, -1, null, null);
