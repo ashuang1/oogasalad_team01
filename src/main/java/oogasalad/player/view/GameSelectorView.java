@@ -53,6 +53,7 @@ public class GameSelectorView {
 
   private final JsonConfigParser configParser = new JsonConfigParser();
   private final FileChooser fileChooser = new FileChooser();
+  private final FormattingUtils formattingUtils = new FormattingUtils();
 
   private Label fileLabel;
   private Button startButton;
@@ -228,11 +229,11 @@ public class GameSelectorView {
       LoggingManager.LOGGER.warn("Could not load config: {}", path, e);
     }
     if (isMultiplayer) {
-      myMainController.showNetworkedGameLobbyView();
+      myMainController.showNetworkedGameLobbyView(path);
       myMainController.hideGameSelectorView();
     }
     else if (!myMainController.showGamePlayerView(path, randomize)) {
-      showErrorDialog(getMessage("ERROR"), getMessage("CANNOT_LOAD_GAME"));
+      formattingUtils.showErrorDialog(getMessage("ERROR"), getMessage("CANNOT_LOAD_GAME"));
     } else {
       myMainController.hideGameSelectorView();
     }
@@ -245,7 +246,7 @@ public class GameSelectorView {
         .orElse(null);
 
     if (config == null) {
-      showErrorDialog("Error", "Game configuration not found.");
+      formattingUtils.showErrorDialog("Error", "Game configuration not found.");
       return;
     }
 
@@ -321,18 +322,8 @@ public class GameSelectorView {
       attemptShowingGamePlayerView(fileLabel.getText(), false);
     } catch (Exception e) {
       LoggingManager.LOGGER.error("Exception: {}", e.getMessage());
-      showErrorDialog(getMessage("ERROR"), e.getMessage());
+      formattingUtils.showErrorDialog(getMessage("ERROR"), e.getMessage());
     }
-  }
-
-
-  private void showErrorDialog(String title, String message) {
-    Alert alert = new Alert(AlertType.ERROR);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-    FormattingUtil.applyStandardDialogStyle(alert);
-    alert.showAndWait();
   }
 }
 
