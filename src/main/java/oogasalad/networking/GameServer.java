@@ -104,7 +104,7 @@ public class GameServer {
     lobbyStateManager.updateReady(playerId, isReady);
     broadcastUpdatedPlayerStatuses();
 
-    if (checkAllPlayersReady()) {
+    if (lobbyStateManager.allReady()) {
       Map<String, Object> payload = new HashMap<>();
       payload.put("playerIds", new ArrayList<>(lobbyStateManager.getAllStatuses().keySet()));
       GameMessage startMessage = new GameMessage(MessageType.START, -1, payload);
@@ -117,10 +117,6 @@ public class GameServer {
     statusPayload.put("playerStatuses", new HashMap<>(lobbyStateManager.getAllStatuses()));
     GameMessage statusMessage = new GameMessage(MessageType.PLAYER_STATUS, -1, statusPayload);
     broadcast(statusMessage);
-  }
-
-  private boolean checkAllPlayersReady() {
-    return lobbyStateManager.allReady();
   }
 
   /**

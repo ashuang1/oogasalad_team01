@@ -152,7 +152,6 @@ public class MainController {
       myNetworkedGameLobbyView = new NetworkedGameLobbyView(this);
     }
     if (!myRoot.getChildren().contains(myNetworkedGameLobbyView.getRoot())) {
-//      myNetworkedGameLobbyView.resetUploadSection();
       myRoot.getChildren().add(myNetworkedGameLobbyView.getRoot());
     }
   }
