@@ -36,11 +36,13 @@ public class GameClient {
   private final int serverPort;
   private int playerId = -1;
   private boolean isReady = false;
-  private GameMessageDispatcher messageDispatcher = new GameMessageDispatcher();
-  private final Map<Integer, RemoteControlStrategy> playerIdToRemoteControlStrategy = new HashMap<>();
+  private final GameMessageDispatcher messageDispatcher = new GameMessageDispatcher();
+  private final Map<Integer, RemoteControlStrategy> playerIdToRemoteControlStrategy
+      = new HashMap<>();
   private Set<Integer> activePlayerIds = new HashSet<>();
 
   private Consumer<Map<Integer, Boolean>> playerStatusListener;
+  private Runnable startGameListener;
   private Runnable disconnectListener;
   private final ObjectMapper mapper = JsonUtils.getMapper();
 
@@ -122,6 +124,15 @@ public class GameClient {
     Object raw = message.payload().get("playerIds");
     List<Integer> ids = mapper.convertValue(raw, new TypeReference<>() {});
     this.activePlayerIds = new HashSet<>(ids);
+    for (Integer id : activePlayerIds) {
+      RemoteControlStrategy strategy = (id == playerId) ? null :
+          playerIdToRemoteControlStrategy.get(id);
+      playerIdToRemoteControlStrategy.put(id, strategy);
+    }
+
+    if (startGameListener != null) {
+      Platform.runLater(startGameListener);
+    }
   }
 
   private void handleMove(GameMessage message) {
@@ -179,6 +190,15 @@ public class GameClient {
     this.disconnectListener = listener;
   }
 
+  /**
+   * Sets a callback to be executed when the client detects a START game message from the server.
+   *
+   * @param listener a {@code Runnable} to run on the JavaFX Application Thread on game start
+   */
+  public void setStartGameListener(Runnable listener) {
+    this.startGameListener = listener;
+  }
+
   private void notifyDisconnected() {
     if (disconnectListener != null) {
       Platform.runLater(disconnectListener);
@@ -204,6 +224,24 @@ public class GameClient {
    */
   public void close() throws IOException {
     socket.close();
+  }
+
+  /**
+   * Gets playerId of client.
+   *
+   * @return playerId
+   */
+  public int getPlayerId() {
+    return playerId;
+  }
+
+  /**
+   * Gets set of activePlayerIds of game.
+   *
+   * @return activePlayerIds
+   */
+  public Set<Integer> getActivePlayerIds() {
+    return activePlayerIds;
   }
 
   public static void main(String[] args) throws IOException {
