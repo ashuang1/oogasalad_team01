@@ -3,6 +3,7 @@ package oogasalad.player.view;
 import static oogasalad.engine.utility.constants.GameConfig.WIDTH;
 
 import java.io.IOException;
+import java.util.Set;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import oogasalad.engine.config.JsonConfigParser;
@@ -34,6 +35,9 @@ public class GamePlayerView {
   private ConfigModelRecord myConfigModel = null;
   private final GameSessionManager sessionManager;
   private LevelController levelController;
+
+  private int myPlayerId;
+  private Set<Integer> activePlayerIds;
 
   /**
    * Constructs a GamePlayerView object that represents the visual interface for the game player.
@@ -223,4 +227,14 @@ public class GamePlayerView {
     return sessionManager;
   }
 
+  /**
+   * Set playerId and activePlayerIds obtained from network client.
+   *
+   * @param playerId client's player id
+   * @param activePlayerIds set of active player ids
+   */
+  public void setPlayerContext(int playerId, Set<Integer> activePlayerIds) {
+    this.myPlayerId = playerId;
+    this.activePlayerIds = activePlayerIds;
+  }
 }

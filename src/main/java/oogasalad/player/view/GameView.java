@@ -74,6 +74,8 @@ public class GameView {
     myGameMapView.setEndGameCallback(won -> showEndMessage(won, isFinalLevel));
   }
 
+  // overload constructor for multiplayer game
+
   private void setBackgroundImage(ConfigModelRecord configModel, int levelIndex,
       String gameFolder) {
     // ChatGPT generated this code.
