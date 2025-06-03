@@ -39,7 +39,8 @@
           "targetCalculationStrategy": "TargetLocation",
           "targetX": 14,
           "targetY": 14
-        }
+        },
+        "player": 4
       },
       "movementSpeed": 1.0
     },
@@ -98,7 +99,8 @@
           "targetCalculationStrategy": "TargetLocation",
           "targetX": 27,
           "targetY": 30
-        }
+        },
+        "player": 4
       },
       "movementSpeed": 1.0
     }
