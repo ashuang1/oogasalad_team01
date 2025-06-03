@@ -3,8 +3,9 @@ package oogasalad.player.model;
 import oogasalad.engine.records.config.model.SettingsRecord;
 
 /**
- * Implementation of the GameState interface. This class manages the player's score, lives, and HUD
- * components. It also provides functionality for saving and loading game states.
+ * Implementation of the GameState interface. This class manages the player's score, lives, HUD
+ * components, and if the game is multiplayer. It also provides functionality for saving and loading
+ * game states.
  *
  * @author Troy Ludwig
  */
@@ -16,6 +17,7 @@ public class GameState implements GameStateInterface {
   private final int startingLives;
   private final int initialScore;
   private double timeElapsed = 0;
+  private final boolean isMultiplayer;
 
   /**
    * Loads in game settings given the game setting record.
@@ -28,6 +30,7 @@ public class GameState implements GameStateInterface {
     this.score = initialScore;
     this.lives = startingLives;
     this.highScore = 0;
+    this.isMultiplayer = gameSettings.isMultiplayer();
   }
 
   @Override
@@ -90,5 +93,10 @@ public class GameState implements GameStateInterface {
   @Override
   public void setLives(int lives) {
     this.lives = lives;
+  }
+
+  @Override
+  public boolean getIsMultiplayer() {
+    return isMultiplayer;
   }
 }
