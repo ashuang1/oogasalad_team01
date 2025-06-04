@@ -1,6 +1,9 @@
 package oogasalad.player.model;
 
+import java.util.Map;
+import java.util.Set;
 import oogasalad.engine.config.EntityPlacement;
+import oogasalad.engine.records.MultiplayerContextRecord;
 import oogasalad.engine.records.config.ConfigModelRecord;
 import oogasalad.engine.records.config.ModeConfigRecord;
 import oogasalad.engine.records.model.EntityTypeRecord;
@@ -8,6 +11,7 @@ import oogasalad.engine.utility.constants.Directions.Direction;
 import oogasalad.player.controller.GameInputManager;
 import oogasalad.player.model.api.ControlStrategyFactory;
 import oogasalad.player.model.strategies.control.ControlStrategyInterface;
+import oogasalad.player.model.strategies.control.RemoteControlStrategy;
 
 /**
  * An abstract class to represent an Entity in the game.
@@ -25,6 +29,7 @@ public class Entity {
   private final double speed;
   private Direction currentDirection;
   private final ConfigModelRecord myConfig;
+  private final MultiplayerContextRecord mpContext;
   public static final double ENTITY_SPEED_MULTIPLIER = 0.12;
   public static final double MIN_SPEED = 0;
   public static final double MAX_SPEED = 0.5;
@@ -36,13 +41,14 @@ public class Entity {
    * @
    */
   public Entity(GameInputManager input, EntityPlacement entityPlacement,
-      GameMapInterface gameMap, ConfigModelRecord config) {
+      GameMapInterface gameMap, ConfigModelRecord config, MultiplayerContextRecord mpContext) {
     myEntityPlacement = entityPlacement;
     this.inputManager = input;
     this.gameMap = gameMap;
     this.myConfig = config;
+    this.mpContext = mpContext;
     this.myControlStrategy = ControlStrategyFactory.createControlStrategy(inputManager,
-        myEntityPlacement, this.gameMap, -1, null, null);
+        myEntityPlacement, this.gameMap, mpContext);
     speed = setSpeedFromConfig(entityPlacement);
   }
 
@@ -113,7 +119,7 @@ public class Entity {
    */
   public void updateControlStrategy() {
     myControlStrategy = ControlStrategyFactory.createControlStrategy(inputManager,
-        myEntityPlacement, this.gameMap, -1, null, null);
+        myEntityPlacement, this.gameMap, mpContext);
   }
 
   /**

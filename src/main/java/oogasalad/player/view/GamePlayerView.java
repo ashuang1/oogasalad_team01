@@ -3,6 +3,7 @@ package oogasalad.player.view;
 import static oogasalad.engine.utility.constants.GameConfig.WIDTH;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Set;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -10,6 +11,7 @@ import oogasalad.engine.config.JsonConfigParser;
 import oogasalad.engine.controller.MainController;
 import oogasalad.engine.exceptions.ConfigException;
 import oogasalad.engine.records.GameContextRecord;
+import oogasalad.engine.records.MultiplayerContextRecord;
 import oogasalad.engine.records.config.ConfigModelRecord;
 import oogasalad.engine.utility.LoggingManager;
 import oogasalad.player.controller.LevelController;
@@ -36,8 +38,7 @@ public class GamePlayerView {
   private final GameSessionManager sessionManager;
   private LevelController levelController;
 
-  private int myPlayerId;
-  private Set<Integer> activePlayerIds;
+  private MultiplayerContextRecord mpContext = null;
 
   /**
    * Constructs a GamePlayerView object that represents the visual interface for the game player.
@@ -78,7 +79,7 @@ public class GamePlayerView {
     updateGameStateFromSession();
 
     levelController = new LevelController(myMainController, myConfigModel, isRandomized,
-        sessionManager);
+        sessionManager, mpContext);
     loadGameViewFromSession();
   }
 
@@ -136,7 +137,8 @@ public class GamePlayerView {
         myConfigModel,
         logicalIndex,
         sessionManager,
-        (gameFolderPath + "/")
+        (gameFolderPath + "/"),
+        mpContext
     );
   }
 
@@ -203,7 +205,7 @@ public class GamePlayerView {
     updateGameStateFromSession();
 
     levelController = new LevelController(myMainController, myConfigModel, isRandomized,
-        sessionManager);
+        sessionManager, mpContext);
     loadGameViewFromSession();
 
     myGameView.resetControlledEntitiesToSpawn();
@@ -234,7 +236,6 @@ public class GamePlayerView {
    * @param activePlayerIds set of active player ids
    */
   public void setPlayerContext(int playerId, Set<Integer> activePlayerIds) {
-    this.myPlayerId = playerId;
-    this.activePlayerIds = activePlayerIds;
+    mpContext = new MultiplayerContextRecord(playerId, activePlayerIds, new HashMap<>());
   }
 }

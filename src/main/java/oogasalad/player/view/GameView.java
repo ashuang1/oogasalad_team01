@@ -15,6 +15,7 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.StackPane;
 import oogasalad.engine.records.GameContextRecord;
+import oogasalad.engine.records.MultiplayerContextRecord;
 import oogasalad.engine.records.config.ConfigModelRecord;
 import oogasalad.engine.utility.LanguageManager;
 import oogasalad.engine.utility.LoggingManager;
@@ -53,7 +54,7 @@ public class GameView {
    * @param gameFolder  The full path to the game folder
    */
   public GameView(GameContextRecord gameContext, ConfigModelRecord configModel, int levelIndex,
-      GameSessionManager sessionManager, String gameFolder) {
+      GameSessionManager sessionManager, String gameFolder, MultiplayerContextRecord mpContext) {
     myRoot = new StackPane();
     myGameContext = gameContext;
     GameMapView myGameMapView = new GameMapView(gameContext, configModel, gameFolder);
@@ -68,13 +69,11 @@ public class GameView {
 
     myGameLoopController = new GameLoopController(configModel, gameContext,
         myGameMapView,
-        configModel.levels().get(sessionManager.getLevelOrder().get(levelIndex)));
+        configModel.levels().get(sessionManager.getLevelOrder().get(levelIndex)), mpContext);
     myGameMapView.setGameLoopController(myGameLoopController);
     setUpEndMessage();
     myGameMapView.setEndGameCallback(won -> showEndMessage(won, isFinalLevel));
   }
-
-  // overload constructor for multiplayer game
 
   private void setBackgroundImage(ConfigModelRecord configModel, int levelIndex,
       String gameFolder) {

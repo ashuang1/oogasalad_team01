@@ -1,10 +1,14 @@
 package oogasalad.player.model.api;
 
+import java.util.Map;
+import java.util.Set;
 import oogasalad.engine.config.EntityPlacement;
+import oogasalad.engine.records.MultiplayerContextRecord;
 import oogasalad.engine.records.config.ConfigModelRecord;
 import oogasalad.player.controller.GameInputManager;
 import oogasalad.player.model.Entity;
 import oogasalad.player.model.GameMapInterface;
+import oogasalad.player.model.strategies.control.RemoteControlStrategy;
 
 /**
  * A factory design pattern used to create various entities.
@@ -22,7 +26,7 @@ public class EntityFactory {
    * @see Entity
    */
   public static Entity createEntity(GameInputManager input, EntityPlacement data,
-      GameMapInterface gameMap, ConfigModelRecord config) {
-    return new Entity(input, data, gameMap, config);
+      GameMapInterface gameMap, ConfigModelRecord config, MultiplayerContextRecord mpContext) {
+    return new Entity(input, data, gameMap, config, mpContext);
   }
 }

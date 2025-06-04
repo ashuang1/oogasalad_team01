@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import oogasalad.engine.controller.MainController;
 import oogasalad.engine.exceptions.InvalidPositionException;
+import oogasalad.engine.records.MultiplayerContextRecord;
 import oogasalad.engine.records.config.ConfigModelRecord;
 import oogasalad.engine.utility.LoggingManager;
 import oogasalad.player.model.GameMapInterface;
@@ -23,6 +24,7 @@ public class LevelController {
   private final ConfigModelRecord myConfigModel;
   private final MainController myMainController;
   private final List<Integer> myLevelOrder;
+  private final MultiplayerContextRecord mpContext;
 
   /**
    * Constructs a LevelController to manage the progression of game levels. Initializes the level
@@ -36,7 +38,7 @@ public class LevelController {
    * @param sessionManager the manager responsible for tracking and saving session progress
    */
   public LevelController(MainController mainController, ConfigModelRecord configModel,
-      boolean randomized, GameSessionManager sessionManager) {
+      boolean randomized, GameSessionManager sessionManager, MultiplayerContextRecord mpContext) {
     myMainController = mainController;
     myConfigModel = configModel;
     this.myLevelIndex = sessionManager.getCurrentLevel(); // Start from saved level, not configModel directly
@@ -49,6 +51,7 @@ public class LevelController {
     if (randomized) {
       Collections.shuffle(myLevelOrder);
     }
+    this.mpContext = mpContext;
   }
 
   /**
@@ -63,7 +66,7 @@ public class LevelController {
     try {
       int mappedIndex = myLevelOrder.get(myLevelIndex);
       return GameMapFactory.createGameMap(myMainController.getInputManager(), myConfigModel,
-          mappedIndex);
+          mappedIndex, mpContext);
     } catch (InvalidPositionException e) {
       LoggingManager.LOGGER.warn("Failed to create GameMap: ", e);
       return null;

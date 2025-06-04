@@ -10,6 +10,7 @@ import oogasalad.engine.config.EntityPlacement;
 import oogasalad.engine.exceptions.EntityNotFoundException;
 import oogasalad.engine.exceptions.InvalidPositionException;
 import oogasalad.engine.records.GameContextRecord;
+import oogasalad.engine.records.MultiplayerContextRecord;
 import oogasalad.engine.records.config.ConfigModelRecord;
 import oogasalad.engine.records.config.model.ModeChangeInfo;
 import oogasalad.engine.records.config.model.ParsedLevelRecord;
@@ -44,6 +45,7 @@ public class GameLoopController {
   private final Map<String, Double> lastRespawnTimes = new HashMap<>();
   private double lastUpdateTime = -1;
 
+  private MultiplayerContextRecord mpContext;
 
   /**
    * Initialize the game loop controller and start the animation. Calling the constructor will
@@ -56,7 +58,7 @@ public class GameLoopController {
    */
   public GameLoopController(ConfigModelRecord gameConfig, GameContextRecord gameContext,
       GameMapView gameMapView,
-      ParsedLevelRecord level) {
+      ParsedLevelRecord level, MultiplayerContextRecord mpContext) {
     myGameContext = gameContext;
     myGameMapView = gameMapView;
     myGameInputManager = gameContext.inputManager();
@@ -64,6 +66,7 @@ public class GameLoopController {
     myGameSpeedMultiplier = gameConfig.settings().gameSpeed();
     myConfig = gameConfig;
     this.respawnableEntities = gameConfig.respawnableEntities();
+    this.mpContext = mpContext;
     initializeGameLoop();
   }
   // this and following methods are written by ChatGPT
@@ -219,7 +222,7 @@ public class GameLoopController {
         myGameContext.inputManager(),
         new EntityPlacement(entityType, spawnX, spawnY, "Default"),
         myGameContext.gameMap(),
-        myConfig
+        myConfig, mpContext
     );
     myGameContext.gameMap().addEntity(newEntity);
   }
@@ -261,7 +264,7 @@ public class GameLoopController {
       Entity newEntity = new Entity(null,
           new EntityPlacement(spawnEvent.entityType(), spawnEvent.x(), spawnEvent.y(),
               spawnEvent.mode()),
-          myGameContext.gameMap(), myConfig);
+          myGameContext.gameMap(), myConfig, mpContext);
       myGameContext.gameMap().incrementEntityCount(newEntity.getEntityPlacement().getTypeString());
       try {
         myGameContext.gameMap().addEntity(newEntity);
