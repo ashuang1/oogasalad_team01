@@ -12,6 +12,7 @@ import java.util.Map;
 
 import oogasalad.engine.config.EntityPlacement;
 import oogasalad.engine.records.GameContextRecord;
+import oogasalad.engine.records.MultiplayerContextRecord;
 import oogasalad.engine.records.config.ConfigModelRecord;
 import oogasalad.engine.records.config.ImageConfigRecord;
 import oogasalad.engine.records.config.ModeConfigRecord;
@@ -59,7 +60,7 @@ public class GameMapControllerTest {
     EntityPlacement placement = new EntityPlacement(data, 5, 5, "Default");
     GameInputManager mockInputManager = mock(GameInputManager.class);
     Entity entity = new Entity(mockInputManager, placement, mockGameMap,
-        mock(ConfigModelRecord.class));
+        mock(ConfigModelRecord.class), new MultiplayerContextRecord(-1, null, null));
     entity.setDx(1);
     entity.setDy(-1);
 

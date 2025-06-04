@@ -1,8 +1,6 @@
 package oogasalad.player.view;
 
 import static oogasalad.engine.utility.LanguageManager.getMessage;
-
-import java.io.IOException;
 import java.util.Map;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -17,13 +15,13 @@ import oogasalad.engine.controller.MainController;
 import oogasalad.engine.utility.constants.GameConfig;
 import oogasalad.engine.view.components.FormattingUtil;
 import oogasalad.networking.GameClient;
-import oogasalad.networking.GameServer;
 import oogasalad.player.controller.LobbyNetworkController;
 
 public class NetworkedGameLobbyView {
 
   private final VBox myRoot;
   private final MainController myMainController;
+  private final String folderPath;
 
   // Lobby Components
   private TextField ipField;
@@ -37,9 +35,11 @@ public class NetworkedGameLobbyView {
   private Label statusLabel;
 
   private final LobbyNetworkController lobbyNetworkController = new LobbyNetworkController();
+  private FormattingUtils formattingUtils = new FormattingUtils();
 
-  public NetworkedGameLobbyView(MainController controller) {
+  public NetworkedGameLobbyView(MainController controller, String path) {
     this.myMainController = controller;
+    this.folderPath = path;
     myRoot = new VBox(15);
     initializeLayout();
     initializeLobbyUI();
@@ -148,6 +148,7 @@ public class NetworkedGameLobbyView {
     try {
       int portNumber = Integer.parseInt(port);
       lobbyNetworkController.startServer(portNumber);
+      registerStartGameListener(lobbyNetworkController.getClient());
       updateUiOnConnectOrDisconnect(lobbyNetworkController.isConnected());
       statusLabel.setText("Server created on port " + port);
     } catch (Exception e) {
@@ -166,6 +167,7 @@ public class NetworkedGameLobbyView {
     int portNumber = Integer.parseInt(port);
     lobbyNetworkController.joinServer(ip, portNumber);
     GameClient client = lobbyNetworkController.getClient();
+    registerStartGameListener(client);
     updateUiOnConnectOrDisconnect(lobbyNetworkController.isConnected());
     client.setDisconnectListener(() -> {
       setConnectionUiState(false);
@@ -173,6 +175,22 @@ public class NetworkedGameLobbyView {
     });
 
     statusLabel.setText("Attempting to join " + ip + ":" + port);
+  }
+
+  private void registerStartGameListener(GameClient client) {
+    client.setStartGameListener(() -> {
+      Platform.runLater(() -> {
+        int myPlayerId = client.getPlayerId();
+        var activePlayerIds = client.getActivePlayerIds();
+
+        if (!myMainController.showGamePlayerView(folderPath, false,
+            myPlayerId, activePlayerIds)) {
+          formattingUtils.showErrorDialog(getMessage("ERROR"), getMessage("CANNOT_LOAD_GAME"));
+        } else {
+          myMainController.hideNetworkedLobbyView();
+        }
+      });
+    });
   }
 
   private void updateUiOnConnectOrDisconnect(boolean isConnected) {

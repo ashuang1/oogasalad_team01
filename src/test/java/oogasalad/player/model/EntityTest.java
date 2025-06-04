@@ -46,7 +46,7 @@ class EntityTest {
     // MOCK STATIC METHOD
     controlStrategyFactoryMock = mockStatic(ControlStrategyFactory.class);
     controlStrategyFactoryMock
-        .when(() -> ControlStrategyFactory.createControlStrategy(any(), any(), any(), anyInt(), any(), any()))
+        .when(() -> ControlStrategyFactory.createControlStrategy(any(), any(), any(), any()))
         .thenReturn(mock(ControlStrategyInterface.class));
 
     // Create dummy mode
@@ -58,7 +58,7 @@ class EntityTest {
     when(mockPlacement.getType()).thenReturn(new EntityTypeRecord("test", modes, null));
     when(mockPlacement.getMode()).thenReturn("Default");
 
-    entity = new Entity(mockInput, mockPlacement, mockMap, mock(ConfigModelRecord.class));
+    entity = new Entity(mockInput, mockPlacement, mockMap, mock(ConfigModelRecord.class), null);
   }
 
   @AfterEach

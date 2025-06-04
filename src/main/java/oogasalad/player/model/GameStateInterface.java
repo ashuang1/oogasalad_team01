@@ -80,4 +80,11 @@ public interface GameStateInterface {
    * @param highScore A new potential high score.
    */
   void updateHighScore(int highScore);
+
+  /**
+   * Get if game allows multiplayer.
+   *
+   * @return boolean representing if game allows multiplayer.
+   */
+  boolean getIsMultiplayer();
 }

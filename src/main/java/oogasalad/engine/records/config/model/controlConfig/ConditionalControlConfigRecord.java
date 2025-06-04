@@ -6,7 +6,12 @@ public record ConditionalControlConfigRecord(
     int radius,
     String pathFindingStrategyInRadius,
     String pathFindingStrategyOutRadius,
-    TargetCalculationConfigInterface targetCalculationConfig
+    TargetCalculationConfigInterface targetCalculationConfig,
+    Integer player
 ) implements ControlConfigInterface {
 
+  @Override
+  public Integer getPlayer() {
+    return player;
+  }
 }

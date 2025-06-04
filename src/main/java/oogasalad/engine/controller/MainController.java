@@ -1,5 +1,6 @@
 package oogasalad.engine.controller;
 
+import java.util.Set;
 import javafx.scene.Group;
 import javafx.stage.Stage;
 import oogasalad.authoring.controller.AuthoringController;
@@ -102,10 +103,37 @@ public class MainController {
    * loaded
    */
   public boolean showGamePlayerView(String gameFolderName, boolean randomized) {
+    return showGamePlayerViewInternal(gameFolderName, randomized, null, null);
+  }
+
+  /**
+   * Show the game player view for a networked game if it is not already being displayed.
+   *
+   * @param gameFolderName name of game folder to create
+   * @param randomized     if levels should be randomized
+   * @param playerId       client's player id
+   * @param activePlayerIds set of active player ids
+   * @return true if the game player was successfully loaded and false if the view could not be
+   * loaded
+   */
+  public boolean showGamePlayerView(String gameFolderName, boolean randomized, int playerId,
+      Set<Integer> activePlayerIds) {
+    return showGamePlayerViewInternal(gameFolderName, randomized, playerId, activePlayerIds);
+  }
+
+  private boolean showGamePlayerViewInternal(String gameFolderName, boolean randomized,
+      Integer playerId, Set<Integer> activePlayerIds) {
     try {
       GameState myGameState = GameStateFactory.createFromConfig(gameFolderName);
-      GameScreenView myGameScreenView = new GameScreenView(this, myGameState, gameFolderName,
-          randomized);
+      GameScreenView myGameScreenView;
+
+      if (playerId != null && activePlayerIds != null) {
+        myGameScreenView = new GameScreenView(this, myGameState, gameFolderName,
+            randomized, playerId, activePlayerIds);
+      } else {
+        myGameScreenView = new GameScreenView(this, myGameState, gameFolderName, randomized);
+      }
+
       myInputManager.getRoot().getChildren().add(myGameScreenView.getRoot());
       myInputManager.setGameScreenView(myGameScreenView);
     } catch (Exception e) {
@@ -147,12 +175,11 @@ public class MainController {
   /**
    * Show the networked game lobby view if not already displayed.
    */
-  public void showNetworkedGameLobbyView() {
+  public void showNetworkedGameLobbyView(String path) {
     if (myNetworkedGameLobbyView == null) {
-      myNetworkedGameLobbyView = new NetworkedGameLobbyView(this);
+      myNetworkedGameLobbyView = new NetworkedGameLobbyView(this, path);
     }
     if (!myRoot.getChildren().contains(myNetworkedGameLobbyView.getRoot())) {
-//      myNetworkedGameLobbyView.resetUploadSection();
       myRoot.getChildren().add(myNetworkedGameLobbyView.getRoot());
     }
   }

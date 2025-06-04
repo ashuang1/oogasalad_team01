@@ -3,6 +3,7 @@ package oogasalad.player.model.strategies.collision;
 import oogasalad.engine.config.EntityPlacement;
 import oogasalad.engine.exceptions.InvalidPositionException;
 import oogasalad.engine.records.CollisionContextRecord;
+import oogasalad.engine.records.MultiplayerContextRecord;
 import oogasalad.engine.records.model.EntityTypeRecord;
 import oogasalad.player.model.Entity;
 import oogasalad.player.model.api.EntityFactory;
@@ -35,7 +36,8 @@ public class AddTailStrategy implements CollisionStrategyInterface {
           null,
           tailPlacement,
           context.gameMap(),
-          movingEntity.getConfig()
+          movingEntity.getConfig(),
+          new MultiplayerContextRecord(-1, null, null)
       );
 
       context.gameMap().addEntity(tail);

@@ -55,7 +55,7 @@ public class TargetStrategyFactoryTest {
   }
 
   private void mockConditionalControlConfig(TargetCalculationConfigInterface targetConfig) {
-    mockControlConfig(new ConditionalControlConfigRecord(3, "", "", targetConfig));
+    mockControlConfig(new ConditionalControlConfigRecord(3, "", "", targetConfig, null));
   }
 
   @Test

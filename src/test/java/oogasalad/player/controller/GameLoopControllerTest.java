@@ -15,6 +15,7 @@ import java.util.HashSet;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import oogasalad.engine.records.GameContextRecord;
+import oogasalad.engine.records.MultiplayerContextRecord;
 import oogasalad.engine.records.config.ConfigModelRecord;
 import oogasalad.engine.records.config.model.ParsedLevelRecord;
 import oogasalad.engine.records.config.model.SettingsRecord;
@@ -60,7 +61,8 @@ class GameLoopControllerTest extends DukeApplicationTest {
         new GameMapView(gameContext, mockConfigModel, "data/games/BasicPacMan/"));
     gameLoopController = Mockito.spy(
         new GameLoopController(mockConfigModel, gameContext, gameMapView, mock(
-            ParsedLevelRecord.class)));
+            ParsedLevelRecord.class),
+            new MultiplayerContextRecord(-1, null, null)));
   }
 
   @Test

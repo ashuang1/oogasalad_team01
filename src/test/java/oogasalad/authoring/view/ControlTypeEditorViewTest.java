@@ -131,7 +131,7 @@ class ControlTypeEditorViewTest extends DukeApplicationTest {
   @Test
   void populateControlConfig_PopulateViewFromConditionalConfigRecord_Success() {
     controlType = new ConditionalControlConfigRecord(5, "Bfs", "Random",
-        new TargetEntityConfigRecord("test"));
+        new TargetEntityConfigRecord("test"), null);
     // Use Platform.runLater to ensure the UI manipulation happens on the FX application thread
     // Asked ChatGPT for debugging this.
     Platform.runLater(() -> controlTypeEditorView.populateControlConfigUI(controlType));

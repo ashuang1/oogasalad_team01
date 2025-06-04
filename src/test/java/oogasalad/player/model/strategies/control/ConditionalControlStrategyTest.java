@@ -66,7 +66,7 @@ class ConditionalControlStrategyTest {
       pathFactoryMock.when(() -> PathFindingStrategyFactory.createPathFindingStrategy("Dijkstra"))
           .thenReturn(mockStrategyOut);
 
-      var config = new ConditionalControlConfigRecord(5, "AStar", "Dijkstra", null);
+      var config = new ConditionalControlConfigRecord(5, "AStar", "Dijkstra", null, null);
       ConditionalControlStrategy strategy = new ConditionalControlStrategy(mockMap, mockPlacement,
           config);
 
@@ -103,7 +103,7 @@ class ConditionalControlStrategyTest {
       pathFactoryMock.when(() -> PathFindingStrategyFactory.createPathFindingStrategy("Dijkstra"))
           .thenReturn(mockStrategyOut);
 
-      var config = new ConditionalControlConfigRecord(3, "AStar", "Dijkstra", null);
+      var config = new ConditionalControlConfigRecord(3, "AStar", "Dijkstra", null, null);
       ConditionalControlStrategy strategy = new ConditionalControlStrategy(mockMap, mockPlacement,
           config);
 
@@ -139,7 +139,7 @@ class ConditionalControlStrategyTest {
       pathFactoryMock.when(() -> PathFindingStrategyFactory.createPathFindingStrategy("Dijkstra"))
           .thenReturn(mockStrategyOut);
 
-      var config = new ConditionalControlConfigRecord(10, "AStar", "Dijkstra", null);
+      var config = new ConditionalControlConfigRecord(10, "AStar", "Dijkstra", null, null);
       ConditionalControlStrategy strategy = new ConditionalControlStrategy(mockMap, mockPlacement,
           config);
 

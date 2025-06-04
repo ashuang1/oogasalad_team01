@@ -2,6 +2,7 @@ package oogasalad.player.model.api;
 
 import oogasalad.engine.config.EntityPlacement;
 import oogasalad.engine.exceptions.InvalidPositionException;
+import oogasalad.engine.records.MultiplayerContextRecord;
 import oogasalad.engine.records.config.ConfigModelRecord;
 import oogasalad.player.controller.GameInputManager;
 import oogasalad.player.model.Entity;
@@ -26,13 +27,14 @@ public class GameMapFactory {
    */
   public static GameMapInterface createGameMap(GameInputManager input,
       ConfigModelRecord configModel,
-      int levelIndex)
+      int levelIndex, MultiplayerContextRecord mcContext)
       throws InvalidPositionException {
     int width = configModel.levels().get(levelIndex).mapInfo().width();
     int height = configModel.levels().get(levelIndex).mapInfo().height();
     GameMap gameMap = new GameMap(width, height); // Hardcoded for now
     for (EntityPlacement entityPlacement : configModel.levels().get(levelIndex).placements()) {
-      Entity entity = EntityFactory.createEntity(input, entityPlacement, gameMap, configModel);
+      Entity entity = EntityFactory.createEntity(input, entityPlacement, gameMap, configModel,
+          mcContext);
       gameMap.addEntity(entity);
     }
     return gameMap;

@@ -31,9 +31,9 @@ public class GameServer {
   private final ExecutorService threadPool;
   private boolean isRunning = true;
   private final Map<Integer, ClientHandler> clients = new ConcurrentHashMap<>();
+  private final MessageBroadcaster broadcaster = new MessageBroadcaster(clients.values());
   private int nextPlayerId = 1;
-  private final Map<Integer, Boolean> playerReadyMap = new ConcurrentHashMap<>();
-  private final ObjectMapper mapper = JsonUtils.getMapper();
+  private final LobbyStateManager lobbyStateManager = new LobbyStateManager();
 
   /**
    * Creates a {@code GameServer} that listens on the specified port.
@@ -73,20 +73,13 @@ public class GameServer {
   }
 
   /**
-   * Broadcasts a {@link GameMessage} to all connected clients by serializing it to JSON.
+   * Broadcasts a {@link GameMessage} to all connected clients by serializing it to JSON using a
+   * {@link MessageBroadcaster}.
    *
    * @param message the {@code GameMessage} to broadcast to all clients
    */
   public void broadcast(GameMessage message) {
-    try {
-      // serialize
-      String json = mapper.writeValueAsString(message);
-      for (ClientHandler client : clients.values()) {
-        client.send(json);
-      }
-    } catch (Exception e) {
-      System.err.println("Failed to serialize GameMessage: " + e.getMessage());
-    }
+    broadcaster.broadcast(message);
   }
 
   /**
@@ -96,7 +89,7 @@ public class GameServer {
    */
   public void removeClient(int playerId) {
     clients.remove(playerId);
-    playerReadyMap.remove(playerId);
+    lobbyStateManager.removePlayer(playerId);
     broadcastUpdatedPlayerStatuses();
   }
 
@@ -108,12 +101,12 @@ public class GameServer {
    * @param isReady ready status of player
    */
   public void handleReadyMessage(int playerId, boolean isReady) {
-    playerReadyMap.put(playerId, isReady);
+    lobbyStateManager.updateReady(playerId, isReady);
     broadcastUpdatedPlayerStatuses();
 
-    if (checkAllPlayersReady()) {
+    if (lobbyStateManager.allReady()) {
       Map<String, Object> payload = new HashMap<>();
-      payload.put("playerIds", new ArrayList<>(playerReadyMap.keySet()));
+      payload.put("playerIds", new ArrayList<>(lobbyStateManager.getAllStatuses().keySet()));
       GameMessage startMessage = new GameMessage(MessageType.START, -1, payload);
       broadcast(startMessage);
     }
@@ -121,14 +114,9 @@ public class GameServer {
 
   private void broadcastUpdatedPlayerStatuses() {
     Map<String, Object> statusPayload = new HashMap<>();
-    statusPayload.put("playerStatuses", new HashMap<>(playerReadyMap));
+    statusPayload.put("playerStatuses", new HashMap<>(lobbyStateManager.getAllStatuses()));
     GameMessage statusMessage = new GameMessage(MessageType.PLAYER_STATUS, -1, statusPayload);
     broadcast(statusMessage);
-  }
-
-  private boolean checkAllPlayersReady() {
-    return !playerReadyMap.isEmpty() &&
-        playerReadyMap.values().stream().allMatch(Boolean::booleanValue);
   }
 
   /**
