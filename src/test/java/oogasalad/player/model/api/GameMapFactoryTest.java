@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import oogasalad.engine.config.EntityPlacement;
 import oogasalad.engine.exceptions.InvalidPositionException;
+import oogasalad.engine.records.MultiplayerContextRecord;
 import oogasalad.engine.records.config.ConfigModelRecord;
 import oogasalad.engine.records.config.model.ParsedLevelRecord;
 import oogasalad.engine.records.config.model.SettingsRecord;
@@ -69,13 +70,15 @@ public class GameMapFactoryTest {
     // ChatGPT on how to mock entity factory correctly
     try (MockedStatic<EntityFactory> mockedFactory = mockStatic(EntityFactory.class)) {
       mockedFactory.when(() -> EntityFactory.createEntity(eq(inputManager), eq(entityPlacement1),
-              any(GameMapInterface.class), any(ConfigModelRecord.class)))
+              any(GameMapInterface.class), any(ConfigModelRecord.class), any()))
           .thenReturn(entity1);
       mockedFactory.when(() -> EntityFactory.createEntity(eq(inputManager), eq(entityPlacement2),
-              any(GameMapInterface.class), any(ConfigModelRecord.class)))
+              any(GameMapInterface.class), any(ConfigModelRecord.class),
+              any()))
           .thenReturn(entity2);
 
-      GameMapInterface gameMap = GameMapFactory.createGameMap(inputManager, configModel, 0);
+      GameMapInterface gameMap = GameMapFactory.createGameMap(inputManager, configModel, 0,
+          new MultiplayerContextRecord(-1, null, null));
 
       assertNotNull(gameMap);
       assertTrue(gameMap.getEntityAt(1, 1).isPresent());
@@ -108,15 +111,18 @@ public class GameMapFactoryTest {
     // ChatGPT on how to mock entity factory correctly
     try (MockedStatic<EntityFactory> mockedFactory = mockStatic(EntityFactory.class)) {
       mockedFactory.when(() -> EntityFactory.createEntity(
-              eq(inputManager), eq(entityPlacement1), any(GameMapInterface.class), eq(configModel)))
+              eq(inputManager), eq(entityPlacement1), any(GameMapInterface.class), eq(configModel),
+              any()))
           .thenReturn(entity1);
 
       mockedFactory.when(() -> EntityFactory.createEntity(
-              eq(inputManager), eq(entityPlacement2), any(GameMapInterface.class), eq(configModel)))
+              eq(inputManager), eq(entityPlacement2), any(GameMapInterface.class), eq(configModel),
+              any()))
           .thenReturn(entity2);
 
       assertThrows(InvalidPositionException.class,
-          () -> GameMapFactory.createGameMap(inputManager, configModel, 0));
+          () -> GameMapFactory.createGameMap(inputManager, configModel, 0,
+              new MultiplayerContextRecord(-1, null, null)));
     }
   }
 
@@ -130,7 +136,8 @@ public class GameMapFactoryTest {
             null, null));
     when(configModel.levels()).thenReturn(levels);
 
-    GameMapInterface gameMap = GameMapFactory.createGameMap(inputManager, configModel, 0);
+    GameMapInterface gameMap = GameMapFactory.createGameMap(inputManager, configModel, 0,
+        new MultiplayerContextRecord(-1, null, null));
 
     assertNotNull(gameMap);
     for (int x = 0; x < 5; x++) {

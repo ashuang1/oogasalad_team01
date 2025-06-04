@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.util.Map;
 
 import oogasalad.engine.config.EntityPlacement;
+import oogasalad.engine.records.MultiplayerContextRecord;
 import oogasalad.engine.records.config.ModeConfigRecord;
 import oogasalad.engine.records.config.model.controlConfig.*;
 import oogasalad.engine.records.model.EntityTypeRecord;
@@ -56,7 +57,7 @@ public class ControlStrategyFactoryTest {
     mockControlConfig(new NoneControlConfigRecord());
 
     ControlStrategyInterface strategy = ControlStrategyFactory.createControlStrategy(mockInput,
-        mockPlacement, mockMap, -1, null, null);
+        mockPlacement, mockMap, new MultiplayerContextRecord(-1, null, null));
     assertInstanceOf(NoneControlStrategy.class, strategy);
   }
 
@@ -65,7 +66,7 @@ public class ControlStrategyFactoryTest {
     mockControlConfig(new KeyboardControlConfigRecord(null));
 
     ControlStrategyInterface strategy = ControlStrategyFactory.createControlStrategy(mockInput,
-        mockPlacement, mockMap, -1, null, null);
+        mockPlacement, mockMap, new MultiplayerContextRecord(-1, null, null));
     assertInstanceOf(KeyboardControlStrategy.class, strategy);
   }
 
@@ -74,7 +75,7 @@ public class ControlStrategyFactoryTest {
     mockControlConfig(new TargetControlConfigRecord("A*", null, null));
 
     ControlStrategyInterface strategy = ControlStrategyFactory.createControlStrategy(mockInput,
-        mockPlacement, mockMap, -1, null, null);
+        mockPlacement, mockMap, new MultiplayerContextRecord(-1, null, null));
     assertInstanceOf(TargetControlStrategy.class, strategy);
   }
 
@@ -83,7 +84,8 @@ public class ControlStrategyFactoryTest {
     mockControlConfig(new ConditionalControlConfigRecord(5, "A*", "Dijkstra", null, null));
 
     ControlStrategyInterface strategy = ControlStrategyFactory.createControlStrategy(mockInput,
-        mockPlacement, mockMap, -1, null, null);
+        mockPlacement, mockMap,
+        new MultiplayerContextRecord(-1, null, null));
     assertInstanceOf(ConditionalControlStrategy.class, strategy);
   }
 
@@ -94,6 +96,7 @@ public class ControlStrategyFactoryTest {
     });
 
     assertThrows(ControlStrategyException.class,
-        () -> ControlStrategyFactory.createControlStrategy(mockInput, mockPlacement, mockMap, -1, null, null));
+        () -> ControlStrategyFactory.createControlStrategy(mockInput, mockPlacement, mockMap,
+            new MultiplayerContextRecord(-1, null, null)));
   }
 }

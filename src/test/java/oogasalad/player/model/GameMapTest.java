@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import oogasalad.engine.config.EntityPlacement;
 import oogasalad.engine.exceptions.EntityNotFoundException;
 import oogasalad.engine.exceptions.InvalidPositionException;
+import oogasalad.engine.records.MultiplayerContextRecord;
 import oogasalad.engine.records.config.ConfigModelRecord;
 import oogasalad.engine.records.config.ModeConfigRecord;
 import oogasalad.engine.records.config.model.controlConfig.ControlConfigInterface;
@@ -55,7 +56,8 @@ class GameMapTest extends DukeApplicationTest {
     EntityTypeRecord data = new EntityTypeRecord("test", modes, new ArrayList<String>());
     EntityPlacement placement = new EntityPlacement(data, 5, 5, "Default");
     myEntity = EntityFactory.createEntity(myInput, placement, myGameMap,
-        mock(ConfigModelRecord.class));
+        mock(ConfigModelRecord.class),
+        new MultiplayerContextRecord(-1, null, null));
   }
 
   @Test
@@ -110,7 +112,8 @@ class GameMapTest extends DukeApplicationTest {
     EntityTypeRecord data = new EntityTypeRecord("test", modes, new ArrayList<String>());
     EntityPlacement placement = new EntityPlacement(data, 5, 5, "Default");
     Entity secondEntity = EntityFactory.createEntity(myInput, placement, myGameMap,
-        mock(ConfigModelRecord.class));
+        mock(ConfigModelRecord.class),
+        new MultiplayerContextRecord(-1, null, null));
     assertDoesNotThrow(() -> myGameMap.addEntity(secondEntity));
     for (Entity next : myGameMap) {
       assertTrue(next.equals(secondEntity) || next.equals(myEntity));
@@ -156,7 +159,8 @@ class GameMapTest extends DukeApplicationTest {
     EntityTypeRecord data = new EntityTypeRecord("test", modes, new ArrayList<String>());
     EntityPlacement placement = new EntityPlacement(data, 5, 5, "Default");
     Entity nonBlockingEntity = EntityFactory.createEntity(myInput, placement, myGameMap,
-        mock(ConfigModelRecord.class));
+        mock(ConfigModelRecord.class),
+        new MultiplayerContextRecord(-1, null, null));
     myGameMap.addEntity(nonBlockingEntity);
 
     assertTrue(myGameMap.isNotBlocked("anyType", 3, 3));
@@ -172,7 +176,8 @@ class GameMapTest extends DukeApplicationTest {
     EntityTypeRecord data = new EntityTypeRecord("test", modes, List.of("Player"));
     EntityPlacement placement = new EntityPlacement(data, 4, 4, "Default");
     Entity blockingEntity = EntityFactory.createEntity(myInput, placement, myGameMap,
-        mock(ConfigModelRecord.class));
+        mock(ConfigModelRecord.class),
+        new MultiplayerContextRecord(-1, null, null));
     myGameMap.addEntity(blockingEntity);
 
     assertFalse(myGameMap.isNotBlocked("Player", 4, 4));
