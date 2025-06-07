@@ -125,7 +125,7 @@ Pac-Man and supports multiple game variations.
     * Preferences such as theme that can be set on the splash screen persists between program runs
 
     * Game Player
-        * Show any number of games automattically, can add a new game by putting the game folder (
+        * Show any number of games automatically, can add a new game by putting the game folder (
           i.e. from the output of authoring environment) into data/games
         * On the splash screen can see information about each game by clicking the i icon under the
           card for the game
@@ -133,7 +133,7 @@ Pac-Man and supports multiple game variations.
         * Pause a game during play by using the pause button at the top or the pause cheat code when
           enabled.
         * Can see HUD information such as high scores (which are through successive runs of the
-          program), score, lives, etc..
+          program), score, lives, etc.
         * Save progress in a game to restart later, the specific save points you can save progress
           are just between levels. You can do this manually by hitting save game between the level
           transitions, it also does it automatically by saving your level every so often, then if
